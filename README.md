@@ -13,14 +13,21 @@ running Ubuntu 22.04.5 LTS with Linux kernel 6.8.0. The system was equipped with
 24 threads, up to 5.2 GHz) and 62 GB of RAM. Analyses were run on Python 3.10. Deep learning models were implemented
 using keras-core with the TensorFlow backend and executed on the CPU.
 
-All libraries can be installed from the **requirements.txt** file.
+------------------------------------------------------------------------------------------------------------------------
+### Steps to use this repository
+1. Install all required packages from the **requirements.txt** file.
+2. Create the following directories: data_raw, data_per_patient, data_processed, models, plots, results, predictions, thresholds.
+3. Download raw [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) data and the derived ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis)
+table in the 'raw_data' directory. 
+4. Run pipeline_main.py for the full pipeline.
+
+The final GBM and LSTM models discussed in the paper are provided in the 'models' directory. Data in the form they were
+inputted in the models are also provided in the 'data_processed' directory.
 
 ------------------------------------------------------------------------------------------------------------------------
 
-### Run pipeline_main.py for the full pipeline.
-
-
-**create_cohort()**: Creates cases and controls cohort using [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) and the derived table ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis) where cases are
+### Functions used in pipeline_main.py
+**create_cohort()**: Creates cases and controls cohort using MIMIC-IV v2.2 and the 'sepsis3' table where cases are
 identified according to the Sepsis-3 definition. Generates *sepsis3_processed.csv*.
 
 **preproc_raw_feat()**: Converts ICD-9 codes to ICD-10 codes, removes outliers and imputs, generates feature summaries.
