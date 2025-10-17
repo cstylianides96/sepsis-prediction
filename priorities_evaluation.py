@@ -1,3 +1,5 @@
+# Author: Andria Nicolaou (nicolaou.andria@ucy.ac.cy)
+
 from sklearn.metrics import confusion_matrix
 import pandas as pd
 import numpy as np

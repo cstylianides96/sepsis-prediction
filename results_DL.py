@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import os
 import pandas as pd
 from model_evaluation import evaluate
@@ -46,7 +48,7 @@ def overall_results_DL_updated(model_list, ver_list):
         results_model = pd.DataFrame(columns=['test_auc', 'test_sen_90', 'test_spec_90', 'test_precision_90',
                                             'test_npv_90', 'test_sen_yuden', 'test_spec_yuden', 'test_precision_yuden',
                                             'test_npv_yuden', 'thres_90', 'thres_yuden', 'acc_90', 'acc_yuden'])
-        for idx in range(41):
+        for idx in range(40):
             probs = pd.read_csv(
                 'predictions/' + str(model) + '_' + str(ver) + '_obs24_pred12_balanced_prob' + '_3.csv').iloc[
                     :, idx]

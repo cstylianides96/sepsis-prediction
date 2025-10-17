@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import pandas as pd
 from sklearn.model_selection import StratifiedShuffleSplit
 #from imblearn.over_sampling import RandomOverSampler, BorderlineSMOTE, ADASYN

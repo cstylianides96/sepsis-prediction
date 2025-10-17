@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 from cohort import create_cohort
 from raw_feat_preproc import preproc_raw_feat
 from data_per_patient import create_data_per_patient
@@ -11,7 +13,7 @@ from itemid_to_name import itemid_to_name_dataset
 from plot import histogram_plots
 from balanced_datasets import df_train_sets_balanced, df_test_sets_balanced, probs_to_pred_thres_90
 from ML_balanced import run_ml_balanced, run_ml_balanced_encoded, run_ml_average
-from DL_model_balanced import run_dl
+from DL_balanced import run_dl
 from results_DL import overall_results_DL, overall_results_DL_updated
 from ensemble import run_ensemble
 from model_evaluation import plot_all_metrics_ensemble
@@ -34,10 +36,10 @@ def run_pipeline():
     df_train_sets_balanced()
     df_test_sets_balanced()
     run_ml_balanced()
-    run_ml_balanced_encoded('GBM', obs_win = 24, pred_win = 12, n_splits = 5)#
+    run_ml_balanced_encoded('GBM', obs_win = 24, pred_win = 12, n_splits = 5)
     run_ml_average()
     probs_to_pred_thres_90('GBM')
-    run_dl(model_name='TCN', obs_win=24, pred_win=12, lr=0.001, epochs=60, batch_size=32, model_try='5')
+    run_dl(model_name='TCN', obs_win=24, pred_win=12, lr=0.001, epochs=60, batch_size=32, model_try='3')
     overall_results_DL()
     overall_results_DL_updated(['1DCNN', '1DCNN-LSTM', 'LSTM', 'TCN'], [1, 3, 1, 3])
     probs_to_pred_thres_90('LSTM')

@@ -1,3 +1,5 @@
+# Author: Andria Nicolaou (nicolaou.andria@ucy.ac.cy)
+
 import pandas as pd
 import os
 

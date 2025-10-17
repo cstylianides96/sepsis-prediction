@@ -1,3 +1,5 @@
+# Author: Andria Nicolaou (nicolaou.andria@ucy.ac.cy)
+
 from datetime import datetime
 from rule_extraction import *
 from rule_selection import *

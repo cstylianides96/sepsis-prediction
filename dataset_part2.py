@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import pandas as pd
 from sklearn.preprocessing import OrdinalEncoder, LabelEncoder
 from sklearn.model_selection import StratifiedShuffleSplit

@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd

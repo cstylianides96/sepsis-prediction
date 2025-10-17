@@ -1,7 +1,7 @@
 # Early Sepsis Prediction Using Interpretable Models
 
 ### Paper
-Cite
+[Citation]
 
 ### Aim
 ML pipeline for sepsis diagnosis 12 hours in advance, by using 24 hours of clinical data (MIMIC-IV) and applying ML, DL, and Ensemble models. The pipeline is supported by a rule-based explainability method and argumentation-based reasoning.
@@ -10,15 +10,16 @@ ML pipeline for sepsis diagnosis 12 hours in advance, by using 24 hours of clini
 Parallel data preprocessing was performed on an HPC cluster running Rocky Linux 8.5, featuring multiple compute nodes
 with AMD EPYC 7313 CPUs, up to 512 GB RAM and managed via SLURM. Experiments were conducted on a local workstation
 running Ubuntu 22.04.5 LTS with Linux kernel 6.8.0. The system was equipped with an Intel Core i9-12900K CPU (16 cores,
-24 threads, up to 5.2 GHz) and 62 GB of RAM. Analyses were run on Python 3.10. Deep learning models were implemented
+24 threads, up to 5.2 GHz) and 62 GB of RAM. Analyses were run on Python >= 3.10. Deep learning models were implemented
 using keras-core with the TensorFlow backend and executed on the CPU.
 
 ------------------------------------------------------------------------------------------------------------------------
 ### Steps to use this repository
 1. Install all required packages from the **requirements.txt** file.
-2. Create the following directories: data_raw, data_per_patient, data_processed, models, plots, results, predictions, thresholds.
-3. Download raw [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) data and the derived ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis)
-table in the 'raw_data' directory. 
+2. Create the following directories: data_raw, data_per_patient, data_processed, models, plots, results, predictions, 
+thresholds, xai-output.
+3. Download raw [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) data and create the ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis)
+table. Save them in the 'data_raw' directory. 
 4. Run pipeline_main.py for the full pipeline.
 
 The final GBM and LSTM models discussed in the paper are provided in the 'models' directory. Data in the form they were
@@ -30,7 +31,8 @@ inputted in the models are also provided in the 'data_processed' directory.
 **create_cohort()**: Creates cases and controls cohort using MIMIC-IV v2.2 and the 'sepsis3' table where cases are
 identified according to the Sepsis-3 definition. Generates *sepsis3_processed.csv*.
 
-**preproc_raw_feat()**: Converts ICD-9 codes to ICD-10 codes, removes outliers and imputs, generates feature summaries.
+**preproc_raw_feat()**: Converts ICD-9 codes to ICD-10 codes, removes outliers lower than the 2nd percentile and above 
+the 98th percentile and imputs with the value at the 2nd and 98th percentile, respectively.
 Generates diagnoses, input, output, procedure and charted data, and their summaries.
 
 **create_data_per_patient()**: Timestep checks, resampling, imputation. Generates *labels_sepsis.csv* and 3 csvs for each
@@ -49,8 +51,15 @@ Generates *os24_pred12.csv*, *obs24_pred12_pfratio.csv*, *obs24_pred12_shockinde
 *obs24_pred12_dopepinephnor_b.csv*, *obs24_pred12_stats.csv*, *obs24_pred12_dig.csv*, *obs24_pred12_all.csv*, *obs24_pred12_all_changes*.
 
 **create_datasets_clean()**: Concatenates features generated in the previous 2 functions and removes duplicates, encodes as
-binary features coming from device measurements, encodes as binary input events, train-test split.
+binary features coming from device measurements*, encodes as binary input events, train-test split.
 Generates *obs24_pred12.csv*, *obs24_pred12_3.csv*, *obs24_pred12_train_3.csv*, *obs24_pred12_test_3.csv*.
+
+*We assume that any chartevent variable belonging in the 'Impella', 'IABP', 'PiCCO', 'NICOM', 'ECMO', 'Centrimag', 
+'Cardiovascular (Pacer Data)', 'Dialysis', 'Access Lines - Invasive', 'Hemodynamics', 'Skin - Impairment', 'Treatments', 
+'Pain / Sedation', or 'Alarms' category with more than 60% missingness across patients came from specialized devices 
+used by the minority of ICU patients. Therefore, these variables were Missing Not At Random (MNAR) and were not suitable 
+for imputation. We encoded them as binary depending on whether a value exists/the device was used for a patient. 
+Any remaining missing chartevent data were imputed using the K-Nearest Neighbour imputation method.
 
 **data_subjects()**: Records subjects per class and data split. Generates *data_subjects.csv*.
 
@@ -105,4 +114,4 @@ the mean performance across them.
 **run_xai()**: Performs Explainable AI: rule extraction and selection. Argumentation-based reasoning is implemented in 
 Prolog and executed using Gorgias Cloud. To run the argumentation algorithm, you'll need to construct the argumentation 
 theory using the findings obtained from rule extraction and selection. More information 
-on how to use Gorgias Cloud can be found at: http://gorgiasb.tuc.gr/GorgiasCloud.html.
+on how to use Gorgias Cloud can be found [here](http://gorgiasb.tuc.gr/GorgiasCloud.html).

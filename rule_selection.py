@@ -1,4 +1,6 @@
-from metrics import *
+# Author: Andria Nicolaou (nicolaou.andria@ucy.ac.cy)
+
+from rule_metrics import *
 
 def rule_selection(auc1, fidelity1, auc2, fidelity2):
 

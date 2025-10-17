@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import numpy as np
 import pandas as pd
 from datetime import datetime

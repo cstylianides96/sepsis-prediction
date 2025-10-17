@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import pandas as pd
 import numpy as np
 from model_evaluation import evaluate
@@ -9,11 +11,11 @@ def run_ensemble():
 
     # predictions from balanced datasets (GBM, LSTM)
     prob_gbm_df= pd.DataFrame()
-    for idx in range(0, 41):
+    for idx in range(0, 40):
         prob_gbm = pd.read_csv(
             'predictions_set5_clean/GBM_obs24_pred12_feat70_balanced_prob' + str(idx + 1) + '_3.csv')
         prob_gbm_df = pd.concat([prob_gbm_df, prob_gbm], axis=1)
-    prob_gbm_df.columns = list(range(1, 42))
+    prob_gbm_df.columns = list(range(1, 41))
     print(prob_gbm_df)
 
     prob_lstm_df = pd.read_csv(
@@ -41,14 +43,14 @@ def run_ensemble():
 
     #y true
     y_test_df = pd.DataFrame()
-    for idx in range(0, 41):
+    for idx in range(0, 40):
         df_test = pd.read_csv('data_processed_set5_clean3_balanced/test_' + str(idx + 1) + '.csv').iloc[:, :-1]  # remove index
         y_test = df_test.iloc[:, -1]
         y_test_df = pd.concat([y_test_df, y_test], axis=1)
-    y_test_df.columns = list(range(1, 42))
+    y_test_df.columns = list(range(1, 41))
     print(y_test_df)
 
-    for idx in range(0, 41):
+    for idx in range(0, 40):
         prob = prob_avg_df.iloc[:, idx]
         prob = prob.dropna()
         y = y_test_df.iloc[:, idx]

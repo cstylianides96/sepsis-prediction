@@ -1,8 +1,10 @@
+# Author: Andria Nicolaou (nicolaou.andria@ucy.ac.cy)
+
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import roc_curve, roc_auc_score,  precision_score, confusion_matrix
 from te2rules.explainer import ModelExplainer
 import numpy as np
-from metrics import *
+from rule_metrics import *
 import os
 
 def rule_extraction(group, target_name, column_labels, selected_path, replace):

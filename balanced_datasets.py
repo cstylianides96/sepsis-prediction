@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import pandas as pd
 
 
@@ -50,7 +52,7 @@ def df_test_sets_balanced():
 # LABELS OF PREDICTIONS (41 BALANCED SETS) ACCORDING TO THRES_90 OF EACH MODEL
 def probs_to_pred_thres_90(model):
     if model=='GBM':
-        for idx in range(1, 42):
+        for idx in range(1, 41):
             probs = pd.read_csv('predictions/GBM_obs24_pred12_feat70_balanced_prob' + str(idx) + '_3_encoded.csv')
             thres = pd.read_csv('thresholds/THRESROC_GBM_obs24_pred12_feat70_balanced_3_encoded.csv')
             for i in range(len(probs)):
@@ -66,7 +68,7 @@ def probs_to_pred_thres_90(model):
                          index=False)
 
     if model=='LSTM':
-        for idx in range(1, 42):
+        for idx in range(1, 41):
             probs = pd.read_csv('predictions/LSTM_1_obs24_pred12_balanced_prob_3.csv').iloc[
                 :, idx - 1].copy()
 
@@ -82,7 +84,7 @@ def probs_to_pred_thres_90(model):
                           index=False)
 
     if model=='ENSEMBLE':
-        for idx in range(1, 42):
+        for idx in range(1, 41):
             probs = pd.read_csv('predictions/GBM-LSTM_obs24_pred12_prob_balanced_3.csv').iloc[:, idx - 1].copy()
             thres_value = pd.read_csv('results/GBM-LSTM_obs24_pred12_results_balanced_3.csv')['thres_90'][idx-1]
             probs = (probs >= thres_value).astype(int)

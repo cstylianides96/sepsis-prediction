@@ -9,4 +9,4 @@ permission from the authors.
 
 If you use this code in your research, please cite:
 
-[Full citation]
+[Citation]

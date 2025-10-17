@@ -1,12 +1,9 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import pandas as pd
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from model_evaluation import evaluate
-from pathlib import Path
-
-
-def count_files_with_string(directory, search_string):
-    return sum(1 for file in Path(directory).iterdir() if file.is_file() and search_string in file.name)
 
 
 def run_ml_balanced():
@@ -21,9 +18,8 @@ def run_ml_balanced():
 
     thres_df = pd.DataFrame(columns=['thres_90', 'thres_yuden'])
 
-    indices = count_files_with_string('data_processed', 'train')
-    for idx in range(0, indices):
-        print(idx+1, '/', indices)
+    for idx in range(0, 40):
+        print(idx+1, '/', 40)
         df_train = pd.read_csv('data_processed/train_' + str(idx+1) + '.csv').iloc[:, :-1] #remove index
         X_df_train = df_train.iloc[:, :-1]
         y_df_train = df_train.iloc[:, -1]
@@ -89,9 +85,8 @@ def run_ml_balanced_encoded(model_name, obs_win, pred_win, n_splits):
 
     thres_df = pd.DataFrame(columns=['thres_90', 'thres_yuden'])
 
-    indices = count_files_with_string('data_processed', 'train')
-    for idx in range(0, indices):
-        print(idx+1, '/', indices)
+    for idx in range(0, 40):
+        print(idx+1, '/', 40)
         df_train = pd.read_csv('data_processed/train_' + str(idx+1) + '_encoded.csv').iloc[:, :-1] #remove index
         X_df_train = df_train.iloc[:, :-1]
         y_df_train = df_train.iloc[:, -1]

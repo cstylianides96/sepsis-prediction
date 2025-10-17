@@ -1,3 +1,7 @@
+# Authors: Charithea Stylianides (c.stylianides@cyens.org.cy) &
+# M. Gupta, B. Gallamoza, N. Cutrona, P. Dhakal, R. Poulain, and R. Beheshti, “An extensive data processing pipeline for
+# mimic-iv,” in Machine Learning for Health, 2022, pp. 311–325.
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
