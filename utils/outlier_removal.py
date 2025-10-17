@@ -1,8 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
+# Authors: M. Gupta, B. Gallamoza, N. Cutrona, P. Dhakal, R. Poulain, and R. Beheshti,
+# “An extensive data processing pipeline for mimic-iv,” in Machine Learning for Health, 2022, pp. 311–325.
 
 import pandas as pd
 import numpy as np
