@@ -16,11 +16,11 @@ using keras-core with the TensorFlow backend and executed on the CPU.
 ------------------------------------------------------------------------------------------------------------------------
 ### Steps to use this repository
 1. Install all required packages from the **requirements.txt** file.
-2. Create the following directories: data_raw, data_per_patient, data_processed, models, plots, results, predictions, 
-thresholds, xai-output.
+2. Create the following directories: 'data_raw', 'data_per_patient', 'data_processed', 'models', 'plots', 'results', 
+'predictions', 'thresholds', 'xai-output'.
 3. Download raw [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) data and create the ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis)
 table. Save them in the 'data_raw' directory. 
-4. Run pipeline_main.py for the full pipeline.
+4. Run **pipeline_main.py** for the full pipeline.
 
 The final GBM and LSTM models discussed in the paper are provided in the 'models' directory. Data in the form they were
 inputted in the models are also provided in the 'data_processed' directory.
