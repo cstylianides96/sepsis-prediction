@@ -44,6 +44,8 @@
 | Hospital admission to ICU admission time (hours)                                                                    | Continuous | Static             |
 | Shock index (Heart rate/Systolic Arterial Blood Pressure)                                                           | Continuous | Temporal           |
 | Statistics of all temporal variables in obs window (min, max, mean, range)                                          | Continuous | Static             |
+
+
 *Hourly bins for 24 hours.
 
 ### TABLE C: VARIABLE LABELS AND THEIR ORDINAL ENCODINGS ACCORDING TO MEDICAL RANGES
@@ -112,8 +114,8 @@
 |                                             | Above 24               | Very High                      | 4        |
 | **Any inputevent or diagnosis**             |                        | True                           | 1        |
 |                                             |                        | False                          | 0        |
-GCS: Glasgow Comma Scale, SV_arterial: Stroke Volume (measured/derived from arterial waveform data), Fspn: spontaneous 
-breathing frequency, RRApacheIIValue: Respiratory Rate according to APACHE-II input
+
+GCS: Glasgow Comma Scale, SV_arterial: Stroke Volume (measured/derived from arterial waveform data), Fspn: spontaneous breathing frequency, RRApacheIIValue: Respiratory Rate according to APACHE-II input
 
 
 ### TABLE D: LIST OF DEMOGRAPHICS AND 70 SELECTED FEATURES ACCORDING TO GBM BUILT-IN FEATURE IMPORTANCE WITH THEIR DESCRIPTIVE STATISTICS ACROSS CLASSES.  
