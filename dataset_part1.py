@@ -2,10 +2,8 @@
 
 import pandas as pd
 from sklearn.model_selection import StratifiedShuffleSplit
-#from imblearn.over_sampling import RandomOverSampler, BorderlineSMOTE, ADASYN
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from sklearn.feature_selection import VarianceThreshold, chi2, mutual_info_classif, f_classif
-#from statsmodels.stats.outliers_influence import variance_inflation_factor
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.feature_selection import VarianceThreshold, mutual_info_classif
 from scipy.stats import pointbiserialr as pbs
 from tqdm import tqdm
 import warnings
@@ -146,7 +144,7 @@ def KNN_imputation(obs_win, pred_win):
     concat_data.to_csv('data_processed/obs' + str(obs_win) + '_pred' + str(pred_win) + '_imputed.csv', index=False)
 
 
-def generate_stayids_demo(obs_win, pred_win):  # , concat_cols,label_enc, one_hot_enc, norm, var_thr, vif, oversam_method):
+def generate_stayids_demo(obs_win, pred_win):
     chunksize = 5000
     ids = []
     labels = []
