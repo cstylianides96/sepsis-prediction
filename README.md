@@ -23,7 +23,7 @@ table. Save them in the 'data_raw' directory.
 4. Download raw [eICU v2.0](https://physionet.org/content/eicu-crd/2.0/) data. Save them in the 'data_raw_eicu_v2.0' directory.
 5. Run **pipeline_main.py** for the full pipeline.
 
-Data as they were used in models after processing are provided in the 'data_processed' and  'data_processed_eicu' directories.
+MIMIC-IV data as they were used in models after processing are provided in the 'data_processed' directory.
 
 ------------------------------------------------------------------------------------------------------------------------
 
