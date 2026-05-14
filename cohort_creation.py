@@ -1,5 +1,3 @@
-# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
-
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -67,7 +65,7 @@ def create_cohort():
     # Add demographics
     eth = pd.read_csv("data_raw/admissions.csv")[['hadm_id', 'insurance', 'race']]
     sepsis3 = pd.merge(sepsis3, eth, how='inner', on='hadm_id')
-    sepsis3 = sepsis3[['subject_id', 'hadm_id', 'stay_id', 'intime', 'outtime', 'age', 'gender', 'race', 'insurance', 'hours_after_adm', 'label']]  # 14623
+    sepsis3 = sepsis3[['subject_id', 'hadm_id', 'stay_id', 'intime', 'outtime', 'age', 'gender', 'race', 'insurance', 'hours_after_adm', 'sepsis_onset', 'label']]  # 14623
 
     # Add CONTROLS (use patients that didnt experience sepsis throughout ICU stay)
     cohort = pd.merge(age, cohort, on=['subject_id'], how='inner')  # 'how': refers to rows of column of 'on', all features of both dfs
@@ -117,3 +115,4 @@ def create_cohort():
     cohort.to_csv('data_processed/sepsis3_processed.csv', index=False)
     cohort.to_csv('data_processed/sepsis3_processed.csv.gz', compression='gzip', index=False)
     print('COHORT DATA CREATED')
+
