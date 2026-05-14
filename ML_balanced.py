@@ -17,9 +17,9 @@ def run_ml_balanced(encoded=False):
     for idx in range(0, 40):
         print(idx+1, '/', 40)
         if encoded:
-            df_train = pd.read_csv('PIPELINE2/data_processed/train_' + str(idx+1) + '_encoded.csv').iloc[:, :-1] #remove index
+            df_train = pd.read_csv('/data_processed/train_' + str(idx+1) + '_encoded.csv').iloc[:, :-1] #remove index
         else:
-            df_train = pd.read_csv('PIPELINE2/data_processed/train_' + str(idx+1) + '.csv').iloc[:, :-1] #remove index
+            df_train = pd.read_csv('/data_processed/train_' + str(idx+1) + '.csv').iloc[:, :-1] #remove index
         X_df_train = df_train.iloc[:, :-1]
         y_df_train = df_train.iloc[:, -1]
         print(y_df_train.value_counts())
@@ -47,9 +47,9 @@ def run_ml_balanced(encoded=False):
 
         # test set
         if encoded:
-            df_test = pd.read_csv('PIPELINE2/data_processed/test_' + str(idx+1) + '_encoded.csv').iloc[:, :-1] #remove index
+            df_test = pd.read_csv('/data_processed/test_' + str(idx+1) + '_encoded.csv').iloc[:, :-1] #remove index
         else:
-            df_test = pd.read_csv('PIPELINE2/data_processed/test_' + str(idx+1) + '.csv').iloc[:, :-1] #remove index
+            df_test = pd.read_csv('/data_processed/test_' + str(idx+1) + '.csv').iloc[:, :-1] #remove index
         X_df_test = df_test.iloc[:, :-1]
         y_df_test = df_test.iloc[:, -1]
         print(y_df_test.value_counts())
@@ -66,25 +66,25 @@ def run_ml_balanced(encoded=False):
                                  thres_90, thres_yuden, acc_90, acc_yuden]
 
         if encoded:
-            results.to_csv('PIPELINE2/results/ML_results_balanced_encoded.csv', index=False)
+            results.to_csv('/results/ML_results_balanced_encoded.csv', index=False)
         else:
-            results.to_csv('PIPELINE2/results/ML_results_balanced.csv', index=False)
+            results.to_csv('/results/ML_results_balanced.csv', index=False)
 
         # save probs for each model
         prob = pd.DataFrame(prob)
 
         if encoded:
-            prob.to_csv('PIPELINE2/predictions/ML_prob_balanced_' + str(idx + 1) + '_encoded.csv', index=False)
+            prob.to_csv('/predictions/ML_prob_balanced_' + str(idx + 1) + '_encoded.csv', index=False)
         else:
-            prob.to_csv('PIPELINE2/predictions/ML_prob_balanced_' + str(idx + 1) + '.csv', index=False)
+            prob.to_csv('/predictions/ML_prob_balanced_' + str(idx + 1) + '.csv', index=False)
 
 
 def run_ml_average(encoded=False):
 
     if encoded:
-        results = pd.read_csv('PIPELINE2/results/ML_results_balanced_encoded.csv')
+        results = pd.read_csv('/results/ML_results_balanced_encoded.csv')
     else:
-        results = pd.read_csv('PIPELINE2/results/ML_results_balanced.csv')
+        results = pd.read_csv('/results/ML_results_balanced.csv')
 
     results_mean = results[['train_auc_mean', 'test_auc', 
                                     'test_sen_90', 'test_spec_90', 'test_precision_90','test_npv_90', 

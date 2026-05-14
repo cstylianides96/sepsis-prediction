@@ -24,7 +24,7 @@ def run_gbm(n_feat_imp):
                                     'val_sen_yuden', 'val_spec_yuden', 'val_precision_yuden', 'val_npv_yuden', 
                                     'thres_90', 'thres_yuden'])
 
-    df_train = pd.read_csv('PIPELINE2/data_processed/train_selected.csv')
+    df_train = pd.read_csv('/data_processed/train_selected.csv')
     X_df_train = df_train.iloc[:, :-1]
     y_df_train = df_train.iloc[:, -1]
     if 'stay_id' in X_df_train.columns:
@@ -34,7 +34,7 @@ def run_gbm(n_feat_imp):
     X_df_train = X_df_train[['220051_diff_0', 'hosp_to_icu', '223900_max', '220546_range', '220621_range', '225624_diff_1', '220621_diff_1', '223900_23', '220545_diff_2', '220050_range', '220052_14', '225612_diff_18', '225624_diff_0', '220621_diff_0', '223901_0', '220615_mean', '220645_diff_1', '220050_diff_0', '220045_diff_0', '225677_range', '220050_diff_20', '220052_diff_10', '220051_diff_2', '225624_diff_2', '223762_min', '220645_mean', '220052_diff_19', '220052_diff_0', '220210_range', '227468_14', '225641_diff_0', '220050_21', '220545_4', '220632_diff_5', '225641_diff_1', '227444_diff_12', '220635_3', '225641_diff_22', '220045_diff_1', '220632_min', '220632_diff_0', '225624_diff_4', '227468_diff_10', '220045_diff_18', '227467_max', '220045_diff_13', '220621_diff_2', '220545_diff_0', '220045_diff_7', '225612_diff_20']]
     
     # Running final model
-    # model = joblib.load('PIPELINE2/models/GBM_feat_selection_feat50(40).pkl')
+    # model = joblib.load('/models/GBM_feat_selection_feat50(40).pkl')
     # model_feats = model.feature_names_in_.tolist()
     # print(model_feats)
     # X_df_train = X_df_train[model_feats]
@@ -83,11 +83,11 @@ def run_gbm(n_feat_imp):
         n_feat = str(n_feat) + '(' + str(n_feat_imp) + ')'
 
     # save model
-    joblib.dump(best_model, 'PIPELINE2/models/GBM_feat_selection_feat' + str(n_feat) + '.pkl')
+    joblib.dump(best_model, '/models/GBM_feat_selection_feat' + str(n_feat) + '.pkl')
 
     # val set evaluation
     usecols = list(X_df_train.columns) + ['label']
-    df_val = pd.read_csv('PIPELINE2/data_processed/val_selected.csv', usecols=usecols)
+    df_val = pd.read_csv('/data_processed/val_selected.csv', usecols=usecols)
     X_df_val = df_val.iloc[:, :-1]
     y_df_val = df_val.iloc[:, -1]
     print(y_df_val.value_counts())
@@ -102,10 +102,10 @@ def run_gbm(n_feat_imp):
                                  sen_yuden, spec_yuden, precision_yuden, npv_yuden, 
                                  thres_90, thres_yuden]
     
-    if not os.path.isfile('PIPELINE2/results/GBM_feat_selection_results.csv'):
-        results.to_csv('PIPELINE2/results/GBM_feat_selection_results.csv', index=False)
+    if not os.path.isfile('/results/GBM_feat_selection_results.csv'):
+        results.to_csv('/results/GBM_feat_selection_results.csv', index=False)
     else:
-        results.to_csv('PIPELINE2/results/GBM_feat_selection_results.csv', mode='a',header=False, index=False)
+        results.to_csv('/results/GBM_feat_selection_results.csv', mode='a',header=False, index=False)
 
     #plot most important features (in training set)
     plot_feat_importances(model_name, n_feat, best_model)
@@ -113,12 +113,12 @@ def run_gbm(n_feat_imp):
 
 
 def gbm_feat_selection():
-    model = joblib.load('PIPELINE2/models/GBM_feat_selection_feat50(40).pkl')
+    model = joblib.load('/models/GBM_feat_selection_feat50(40).pkl')
     features = model.feature_names_in_.tolist()
     print(len(features))
-    train_df_new = pd.read_csv('PIPELINE2/data_processed/train_selected.csv', usecols=features + ['label'])
-    train_df_new.to_csv('PIPELINE2/data_processed/train_selected_feat40.csv', index=False)
-    val_df_new = pd.read_csv('PIPELINE2/data_processed/val_selected.csv', usecols=features + ['label'])
-    val_df_new.to_csv('PIPELINE2/data_processed/val_selected_feat40.csv', index=False)
-    test_df_new = pd.read_csv('PIPELINE2/data_processed/test_selected.csv', usecols=features + ['label'])
-    test_df_new.to_csv('PIPELINE2/data_processed/test_selected_feat40.csv', index=False)
+    train_df_new = pd.read_csv('/data_processed/train_selected.csv', usecols=features + ['label'])
+    train_df_new.to_csv('/data_processed/train_selected_feat40.csv', index=False)
+    val_df_new = pd.read_csv('/data_processed/val_selected.csv', usecols=features + ['label'])
+    val_df_new.to_csv('/data_processed/val_selected_feat40.csv', index=False)
+    test_df_new = pd.read_csv('/data_processed/test_selected.csv', usecols=features + ['label'])
+    test_df_new.to_csv('/data_processed/test_selected_feat40.csv', index=False)

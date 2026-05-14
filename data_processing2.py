@@ -11,7 +11,7 @@ from sklearn.impute import IterativeImputer
 from sklearn.feature_selection import mutual_info_classif
 
 
-cohort = pd.read_csv('PIPELINE2/data_processed/sepsis3_processed.csv')
+cohort = pd.read_csv('/data_processed/sepsis3_processed.csv')
 print(cohort.label.value_counts()) # 0: 80%, 1: 20%
 
 cohort_cases = cohort[(cohort['label']==1) & (cohort['los']>=36) & (cohort['hours_after_adm']>=36)]
@@ -29,7 +29,7 @@ cohort['intime'] = pd.to_datetime(cohort['intime'])
 admtimes = cohort['intime'].tolist()
 cohort['outtime'] = pd.to_datetime(cohort['outtime'])
 distimes = cohort['outtime'].tolist()
-itemids = pd.read_csv('PIPELINE2/data_raw/d_items.csv')
+itemids = pd.read_csv('/data_raw/d_items.csv')
 
 
 
@@ -481,9 +481,9 @@ def flatten_imputed_datasets_24hrs():
 def create_aggregates():
     
     datasets = {
-    # 'train': 'PIPELINE2/data_processed/train_merged_imputed_flattened.csv',
-    'val': 'PIPELINE2/data_processed/val_merged_imputed_flattened.csv',
-    'test': 'PIPELINE2/data_processed/test_merged_imputed_flattened.csv'
+    # 'train': '/data_processed/train_merged_imputed_flattened.csv',
+    'val': '/data_processed/val_merged_imputed_flattened.csv',
+    'test': '/data_processed/test_merged_imputed_flattened.csv'
     }
 
     for split_name, path in datasets.items():
@@ -528,16 +528,16 @@ def create_aggregates():
                     break
 
         agg_df = pd.DataFrame(agg_rows)
-        agg_df.to_csv(f'PIPELINE2/data_processed/{split_name}_merged_imputed_flattened_aggregated.csv', index=False)
+        agg_df.to_csv(f'/data_processed/{split_name}_merged_imputed_flattened_aggregated.csv', index=False)
         print(f'{split_name} aggregated shape: {agg_df.shape}')
 
 
 def generate_binary_features():
 
     datasets = {
-    'train': 'PIPELINE2/data_processed/train_merged_imputed_flattened_aggregated.csv',
-    'val': 'PIPELINE2/data_processed/val_merged_imputed_flattened_aggregated.csv',
-    'test': 'PIPELINE2/data_processed/test_merged_imputed_flattened_aggregated.csv'
+    'train': '/data_processed/train_merged_imputed_flattened_aggregated.csv',
+    'val': '/data_processed/val_merged_imputed_flattened_aggregated.csv',
+    'test': '/data_processed/test_merged_imputed_flattened_aggregated.csv'
     }
 
     for split_name, path in datasets.items():
@@ -567,14 +567,14 @@ def generate_binary_features():
                 gcs_sum_less_than_15 = (df[gcs_col] < 15).astype(int)
                 qsofa_score = resp_rate_more_than_22 + sysbp_less_than_100 + gcs_sum_less_than_15
                 df[f'qsofa_3_{t}'] = (qsofa_score == 3).astype(int)
-        df.to_csv(f'PIPELINE2/data_processed/{split_name}_merged_imputed_flattened_aggregated_binary.csv', index=False)
+        df.to_csv(f'/data_processed/{split_name}_merged_imputed_flattened_aggregated_binary.csv', index=False)
 
 
 def feature_selection(): 
 
-    train = pd.read_csv(f'PIPELINE2/data_processed/train_merged_imputed_flattened_aggregated_binary.csv')
-    val = pd.read_csv(f'PIPELINE2/data_processed/val_merged_imputed_flattened_aggregated_binary.csv')
-    test = pd.read_csv(f'PIPELINE2/data_processed/test_merged_imputed_flattened_aggregated_binary.csv')
+    train = pd.read_csv(f'/data_processed/train_merged_imputed_flattened_aggregated_binary.csv')
+    val = pd.read_csv(f'/data_processed/val_merged_imputed_flattened_aggregated_binary.csv')
+    test = pd.read_csv(f'/data_processed/test_merged_imputed_flattened_aggregated_binary.csv')
 
     x_train_merged = train.drop(columns=['stay_id', 'hadm_id', 'label'])
     print('No. of features before selection:', x_train_merged.shape[1])
@@ -612,14 +612,14 @@ def feature_selection():
     val_sel = pd.concat([val['stay_id'].reset_index(drop=True), val_sel.reset_index(drop=True), y_val_merged.reset_index(drop=True)], axis=1)
     test_sel = pd.concat([test['stay_id'].reset_index(drop=True), test_sel.reset_index(drop=True), y_test_merged.reset_index(drop=True)], axis=1)
     
-    train_sel.to_csv(f'PIPELINE2/data_processed/train_selected.csv', index=False)
-    val_sel.to_csv(f'PIPELINE2/data_processed/val_selected.csv', index=False)
-    test_sel.to_csv(f'PIPELINE2/data_processed/test_selected.csv', index=False)
+    train_sel.to_csv(f'/data_processed/train_selected.csv', index=False)
+    val_sel.to_csv(f'/data_processed/val_selected.csv', index=False)
+    test_sel.to_csv(f'/data_processed/test_selected.csv', index=False)
 
 def check_missing_values():
-    df_train = pd.read_csv('PIPELINE2/data_processed/train_selected.csv')
-    df_val = pd.read_csv('PIPELINE2/data_processed/val_selected.csv')
-    df_test = pd.read_csv('PIPELINE2/data_processed/test_selected.csv')
+    df_train = pd.read_csv('/data_processed/train_selected.csv')
+    df_val = pd.read_csv('/data_processed/val_selected.csv')
+    df_test = pd.read_csv('/data_processed/test_selected.csv')
         
     print(f"Train missing values:\n{df_train.isnull().sum()}")
     print(f"\nValidation missing values:\n{df_val.isnull().sum()}")

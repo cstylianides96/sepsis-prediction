@@ -16,8 +16,8 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 def detect_outliers_chart(): # for chart events
-    lab = pd.read_csv("PIPELINE2/data_processed_eicu/lab_filtered.csv")
-    nurse = pd.read_csv("PIPELINE2/data_processed_eicu/nurse_filtered.csv")
+    lab = pd.read_csv("/data_processed_eicu/lab_filtered.csv")
+    nurse = pd.read_csv("/data_processed_eicu/nurse_filtered.csv")
 
     # Replace generic "Value" with the corresponding label
     mask = nurse['nursingchartcelltypevalname'] == 'Value'
@@ -37,15 +37,15 @@ def detect_outliers_chart(): # for chart events
         df = outlier_imputation(df, item, value, 98, left_thresh=2, impute=True)
         print(df.describe())
         print(df.head())
-        df.to_csv(f"PIPELINE2/data_processed_eicu/{name}_filtered.csv", index=False)
+        df.to_csv(f"/data_processed_eicu/{name}_filtered.csv", index=False)
 
 
 def make_equal_intervals(): # for temporal events
-    lab = pd.read_csv("PIPELINE2/data_processed_eicu/lab_filtered.csv")
-    nurse = pd.read_csv("PIPELINE2/data_processed_eicu/nurse_filtered.csv")
+    lab = pd.read_csv("/data_processed_eicu/lab_filtered.csv")
+    nurse = pd.read_csv("/data_processed_eicu/nurse_filtered.csv")
 
     # Calculate max discharge time from icu admission in hours
-    cohort = pd.read_csv("PIPELINE2/data_processed_eicu/sepsis3_eicu.csv")
+    cohort = pd.read_csv("/data_processed_eicu/sepsis3_eicu.csv")
     max_discharge_offset = cohort['diagnosisoffset'].max()
     max_discharge_offset = max_discharge_offset / 60  # convert to hours
     print("Max discharge offset (hours):", max_discharge_offset)
@@ -88,7 +88,7 @@ def create_temporal_chart():
     # Resample chart events into equal intervals
     lab, nurse, max_discharge_offset = make_equal_intervals()
 
-    cohort = pd.read_csv('PIPELINE2/data_processed_eicu/sepsis3_eicu.csv')
+    cohort = pd.read_csv('/data_processed_eicu/sepsis3_eicu.csv')
     stayids = cohort['patientunitstayid'].tolist()
     # print(stayids)
    
@@ -124,12 +124,12 @@ def create_temporal_chart():
         full_df = pd.concat(full_df, ignore_index=True)
         print(full_df)
         print(full_df.isnull().sum()) # missing values here means item not recorded at all for some patients 
-        full_df.to_csv('PIPELINE2/data_processed_eicu/' + target + '_resampled.csv', index=False)
+        full_df.to_csv('/data_processed_eicu/' + target + '_resampled.csv', index=False)
 
 
 def rename():
 
-    lab = pd.read_csv('PIPELINE2/data_processed_eicu/lab_resampled.csv').rename(columns={'bedside glucose': 220621, 'WBC x 1000': 220546, 
+    lab = pd.read_csv('/data_processed_eicu/lab_resampled.csv').rename(columns={'bedside glucose': 220621, 'WBC x 1000': 220546, 
                                                                                'BUN': 225624, 'Hct': 220545, 'LDH': 220632, 
                                                                                'sodium': 220645, 'fibrinogen': 227468, 
                                                                                'magnesium': 220635, '-lymphs': 225641, 
@@ -137,7 +137,7 @@ def rename():
                                                                                'CRP': 227444, 'phosphate': 225677})
     lab = lab.drop(columns=['glucose'])
 
-    nurse = pd.read_csv('PIPELINE2/data_processed_eicu/nurse_resampled.csv').rename(columns={'Non-Invasive BP Diastolic': 220051, 
+    nurse = pd.read_csv('/data_processed_eicu/nurse_resampled.csv').rename(columns={'Non-Invasive BP Diastolic': 220051, 
                                                                                    'Non-Invasive BP Systolic': 220050,
                                                                               'Non-Invasive BP Mean': 220052, 
                                                                               'Respiratory Rate': 220210, 
@@ -145,17 +145,17 @@ def rename():
                                                                               'Motor Response': 223901, 
                                                                               'Verbal Response': 223900})
     
-    lab.to_csv('PIPELINE2/data_processed_eicu/lab_resampled_renamed.csv', index=False)
-    nurse.to_csv('PIPELINE2/data_processed_eicu/nurse_resampled_renamed.csv', index=False)
+    lab.to_csv('/data_processed_eicu/lab_resampled_renamed.csv', index=False)
+    nurse.to_csv('/data_processed_eicu/nurse_resampled_renamed.csv', index=False)
     
-    demo = pd.read_csv('PIPELINE2/data_processed_eicu/hosp_time.csv').rename(columns={'hospitaladmitoffset': 'hosp_to_icu'})
-    demo.to_csv('PIPELINE2/data_processed_eicu/demo_renamed.csv', index=False)
+    demo = pd.read_csv('/data_processed_eicu/hosp_time.csv').rename(columns={'hospitaladmitoffset': 'hosp_to_icu'})
+    demo.to_csv('/data_processed_eicu/demo_renamed.csv', index=False)
 
 
 def handle_temporal(cohort_chunk_size=100):  #do not flatten, just select 24 hour windows, keep dyn format
     
-    cohort = pd.read_csv('PIPELINE2/data_processed_eicu/sepsis3_eicu.csv')
-    output_path = 'PIPELINE2/data_processed_eicu/temporal_resampled_renamed_24hrs.csv'
+    cohort = pd.read_csv('/data_processed_eicu/sepsis3_eicu.csv')
+    output_path = '/data_processed_eicu/temporal_resampled_renamed_24hrs.csv'
     wrote_any_rows = False
 
     if os.path.exists(output_path):
@@ -170,7 +170,7 @@ def handle_temporal(cohort_chunk_size=100):  #do not flatten, just select 24 hou
     patient_data = {}
 
     # Read lab data in chunks, filter by cohort patients
-    for lab_chunk in pd.read_csv('PIPELINE2/data_processed_eicu/lab_resampled_renamed.csv', 
+    for lab_chunk in pd.read_csv('/data_processed_eicu/lab_resampled_renamed.csv', 
                                   chunksize=chunk_size):
         lab_chunk = lab_chunk[lab_chunk['patientunitstayid'].isin(cohort_dict.keys())]
         for stay_id, group in lab_chunk.groupby('patientunitstayid'):
@@ -180,7 +180,7 @@ def handle_temporal(cohort_chunk_size=100):  #do not flatten, just select 24 hou
     
     print('Building nurse temporal data...')
     # Read nurse data in chunks, filter by cohort patients
-    for nurse_chunk in pd.read_csv('PIPELINE2/data_processed_eicu/nurse_resampled_renamed.csv', 
+    for nurse_chunk in pd.read_csv('/data_processed_eicu/nurse_resampled_renamed.csv', 
                                     chunksize=chunk_size):
         nurse_chunk = nurse_chunk[nurse_chunk['patientunitstayid'].isin(cohort_dict.keys())]
         for stay_id, group in nurse_chunk.groupby('patientunitstayid'):
@@ -252,16 +252,16 @@ def handle_temporal(cohort_chunk_size=100):  #do not flatten, just select 24 hou
 
 def impute():
 
-    temporal = pd.read_csv('PIPELINE2/data_processed_eicu/temporal_resampled_renamed_24hrs.csv')
+    temporal = pd.read_csv('/data_processed_eicu/temporal_resampled_renamed_24hrs.csv')
     temporal = temporal.sort_values(['patientunitstayid', 'time_step']).reset_index(drop=True)
-    hosp_time = pd.read_csv('PIPELINE2/data_processed_eicu/demo_renamed.csv')
+    hosp_time = pd.read_csv('/data_processed_eicu/demo_renamed.csv')
     df = pd.merge(temporal, hosp_time, on='patientunitstayid', how='left')  
     y = df['label']
     id = df['patientunitstayid']
     time_step = df['time_step']
     X = df.drop(columns=['patientunitstayid', 'time_step', 'label'])
     
-    mimic_train_df = pd.read_csv('PIPELINE2/data_processed/train_merged.csv', usecols=X.columns.tolist())
+    mimic_train_df = pd.read_csv('/data_processed/train_merged.csv', usecols=X.columns.tolist())
     # IMPORTANT: keep a deterministic feature order for sklearn name checks.
     # pandas `usecols=[...]` preserves file order, not necessarily list order.
     # Reindex both frames to the exact same ordered columns before fit/transform.
@@ -284,12 +284,12 @@ def impute():
     print(eicu_df.isnull().sum())
     
     eicu_df = pd.concat([id.reset_index(drop=True), time_step.reset_index(drop=True), eicu_df.reset_index(drop=True), y.reset_index(drop=True)], axis=1)
-    eicu_df.to_csv('PIPELINE2/data_processed_eicu/df_imputed.csv', index=False)
+    eicu_df.to_csv('/data_processed_eicu/df_imputed.csv', index=False)
 
 
 def flatten_imputed_dataset_24hrs():
 
-    df = pd.read_csv('PIPELINE2/data_processed_eicu/df_imputed.csv')
+    df = pd.read_csv('/data_processed_eicu/df_imputed.csv')
     df = df.sort_values(['patientunitstayid', 'time_step']).reset_index(drop=True)
 
     # Identify temporal features
@@ -322,12 +322,12 @@ def flatten_imputed_dataset_24hrs():
     hosp_time = df[['patientunitstayid', 'hosp_to_icu']].drop_duplicates(subset=['patientunitstayid'])
     flattened_df = pd.merge(flattened_df, hosp_time, on='patientunitstayid', how='left')
     flattened_df['label'] = flattened_df.pop('label')  # Move label to the end
-    flattened_df.to_csv(f'PIPELINE2/data_processed_eicu/df_imputed_flattened.csv', index=False)
+    flattened_df.to_csv(f'/data_processed_eicu/df_imputed_flattened.csv', index=False)
     print(f'flattened shape: {flattened_df.shape}')
 
 
 def create_aggregates(): 
-    df = pd.read_csv('PIPELINE2/data_processed_eicu/df_imputed_flattened.csv')  
+    df = pd.read_csv('/data_processed_eicu/df_imputed_flattened.csv')  
 
     temporal_cols = [c for c in df.columns if c not in ['patientunitstayid', 'label', 'hosp_to_icu']]
     agg_rows = []
@@ -356,11 +356,11 @@ def create_aggregates():
 
     agg_df = pd.DataFrame(agg_rows)
     agg_df['label'] = agg_df.pop('label')  # Move label to the end
-    agg_df.to_csv(f'PIPELINE2/data_processed_eicu/df_imputed_flattened_agg.csv', index=False)
+    agg_df.to_csv(f'/data_processed_eicu/df_imputed_flattened_agg.csv', index=False)
     print(f'flattened shape: {agg_df.shape}')
 
 def train_test_split():
-    df = pd.read_csv('PIPELINE2/data_processed_eicu/df_imputed_flattened_agg.csv')
+    df = pd.read_csv('/data_processed_eicu/df_imputed_flattened_agg.csv')
     sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
     stays = df['patientunitstayid'].values
     stay_labels = df['label'].values
@@ -369,28 +369,28 @@ def train_test_split():
     test_stays = stays[test_idx]
     train_df = df[df['patientunitstayid'].isin(train_stays)].reset_index(drop=True)
     test_df = df[df['patientunitstayid'].isin(test_stays)].reset_index(drop=True)
-    train_df.to_csv('PIPELINE2/data_processed_eicu/train_df.csv', index=False)
-    test_df.to_csv('PIPELINE2/data_processed_eicu/test_df.csv', index=False)
+    train_df.to_csv('/data_processed_eicu/train_df.csv', index=False)
+    test_df.to_csv('/data_processed_eicu/test_df.csv', index=False)
 
 
 def normalize():
-    train_df = pd.read_csv('PIPELINE2/data_processed_eicu/train_df.csv')
-    test_df = pd.read_csv('PIPELINE2/data_processed_eicu/test_df.csv')
+    train_df = pd.read_csv('/data_processed_eicu/train_df.csv')
+    test_df = pd.read_csv('/data_processed_eicu/test_df.csv')
     
     scaler = MinMaxScaler()
     df_train_norm = pd.DataFrame(scaler.fit_transform(train_df), columns=train_df.columns)
     df_test_norm = pd.DataFrame(scaler.transform(test_df), columns=test_df.columns)
     print(df_train_norm.describe())
-    df_train_norm.to_csv('PIPELINE2/data_processed_eicu/train_df_norm.csv', index=False)
-    df_test_norm.to_csv('PIPELINE2/data_processed_eicu/test_df_norm.csv', index=False)
+    df_train_norm.to_csv('/data_processed_eicu/train_df_norm.csv', index=False)
+    df_test_norm.to_csv('/data_processed_eicu/test_df_norm.csv', index=False)
 
 
 def balance():    
-    train_df = pd.read_csv('PIPELINE2/data_processed_eicu/train_df.csv')
-    train_df_norm = pd.read_csv('PIPELINE2/data_processed_eicu/train_df_norm.csv')
-    test_df = pd.read_csv('PIPELINE2/data_processed_eicu/test_df.csv')
-    test_df_norm = pd.read_csv('PIPELINE2/data_processed_eicu/test_df_norm.csv')
-    # model_feats_dl = pd.read_csv('PIPELINE2/data_processed/train_X_1_norm.csv').iloc[:, :-2].columns.tolist()
+    train_df = pd.read_csv('/data_processed_eicu/train_df.csv')
+    train_df_norm = pd.read_csv('/data_processed_eicu/train_df_norm.csv')
+    test_df = pd.read_csv('/data_processed_eicu/test_df.csv')
+    test_df_norm = pd.read_csv('/data_processed_eicu/test_df_norm.csv')
+    # model_feats_dl = pd.read_csv('/data_processed/train_X_1_norm.csv').iloc[:, :-2].columns.tolist()
 
     print("\nOriginal label distribution:")
     print(train_df['label'].value_counts())
@@ -423,8 +423,8 @@ def balance():
     print("\nBalanced label distribution:")
     print(balanced_train_df['label'].value_counts())
     print(balanced_test_df['label'].value_counts())
-    balanced_train_df.to_csv('PIPELINE2/data_processed_eicu/train_df_balanced.csv', index=False)
-    balanced_test_df.to_csv('PIPELINE2/data_processed_eicu/test_df_balanced.csv', index=False)
+    balanced_train_df.to_csv('/data_processed_eicu/train_df_balanced.csv', index=False)
+    balanced_test_df.to_csv('/data_processed_eicu/test_df_balanced.csv', index=False)
 
     # balance training set (normalized)
     X_train_norm = train_df_norm.drop(columns=['patientunitstayid', 'label'])
@@ -451,8 +451,8 @@ def balance():
         axis=1
     ).copy()
 
-    balanced_train_norm_df.to_csv('PIPELINE2/data_processed_eicu/train_df_norm_balanced.csv', index=False)
-    balanced_test_norm_df.to_csv('PIPELINE2/data_processed_eicu/test_df_norm_balanced.csv', index=False)    
+    balanced_train_norm_df.to_csv('/data_processed_eicu/train_df_norm_balanced.csv', index=False)
+    balanced_test_norm_df.to_csv('/data_processed_eicu/test_df_norm_balanced.csv', index=False)    
 
 
 

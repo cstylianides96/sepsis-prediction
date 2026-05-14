@@ -72,8 +72,8 @@ def plot_feat_importances(model_name, n_feat, model):
     model_feats = model.feature_names_in_.tolist()
     X_cols = model_feats
 
-    itemids = pd.read_csv('PIPELINE2/data_raw/d_items.csv')[['itemid', 'label']]
-    icd10_codes = pd.read_csv('PIPELINE2/data_raw/icd10cm_codes_2024.csv')
+    itemids = pd.read_csv('/data_raw/d_items.csv')[['itemid', 'label']]
+    icd10_codes = pd.read_csv('/data_raw/icd10cm_codes_2024.csv')
 
     importances = model.feature_importances_
     indices = np.argsort(importances)
@@ -119,7 +119,7 @@ def plot_feat_importances(model_name, n_feat, model):
     plt.xlabel('Relative Importance', fontsize=10)
     plt.title('Feature Importances', fontsize=10)
     plt.tight_layout()
-    plt.savefig('PIPELINE2/plots/' + model_name + '_feat' + str(n_feat) + '_importances.png')
+    plt.savefig('/plots/' + model_name + '_feat' + str(n_feat) + '_importances.png')
     plt.show()
 
 

@@ -2,7 +2,7 @@ from typing import Concatenate
 import pandas as pd
 from prompt_toolkit.input import Input
 from sklearn.ensemble import GradientBoostingClassifier
-from DL_balanced import preprocess_temporal
+from DL_balanced2 import preprocess_temporal
 from model_evaluation import evaluate
 from keras_core.metrics import AUC
 import os
@@ -22,15 +22,15 @@ import joblib
 
 # Avoid hard crashes from missing CUDA/cuDNN runtime libraries.
 # Opt-in GPU usage only when explicitly requested:
-#   SEPSIS_USE_GPU=1 /path/to/python PIPELINE2/DL_balanced.py
+#   SEPSIS_USE_GPU=1 /path/to/python /DL_balanced.py
 if os.environ.get('SEPSIS_USE_GPU', '0') != '1':
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 
 def ml_eICU(): 
 
-    df_train_ml = pd.read_csv('PIPELINE2/data_processed_eicu/train_df_balanced.csv')
-    feats_ml = joblib.load('PIPELINE2/models/GBM_feat_selection_feat50(40).pkl').feature_names_in_.tolist() + ['label']
+    df_train_ml = pd.read_csv('/data_processed_eicu/train_df_balanced.csv')
+    feats_ml = joblib.load('/models/GBM_feat_selection_feat50(40).pkl').feature_names_in_.tolist() + ['label']
     df_train_ml = df_train_ml[feats_ml]
     param_grid = {'learning_rate': 0.1, # median
             'n_estimators': 250, # mode
@@ -39,7 +39,7 @@ def ml_eICU():
             'max_features': 1} # same for all
     model_ml = GradientBoostingClassifier(**param_grid, random_state=123)
     model_ml.fit(df_train_ml.iloc[:, :-1], df_train_ml.iloc[:, -1])
-    df_test_ml = pd.read_csv('PIPELINE2/data_processed_eicu/test_df_balanced.csv') 
+    df_test_ml = pd.read_csv('/data_processed_eicu/test_df_balanced.csv') 
     df_test_ml = df_test_ml[feats_ml]
 
     prob_ml = model_ml.predict_proba(df_test_ml.iloc[:, :-1])[:, 1]
@@ -54,8 +54,8 @@ def ml_eICU():
 
 def dl_eICU():
 
-    df_train_dl = pd.read_csv('PIPELINE2/data_processed_eicu/train_df_norm_balanced.csv')
-    feats_df = pd.read_csv('PIPELINE2/data_processed/train_X_1_norm.csv').iloc[:, :-1].columns.tolist()
+    df_train_dl = pd.read_csv('/data_processed_eicu/train_df_norm_balanced.csv')
+    feats_df = pd.read_csv('/data_processed/train_X_1_norm.csv').iloc[:, :-1].columns.tolist()
     df_train_dl = df_train_dl[feats_df]
     X_df_train_dl = df_train_dl.iloc[:, :-1]
     y = df_train_dl.iloc[:, -1]
@@ -106,7 +106,7 @@ def dl_eICU():
     )
 
     early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-    checkpoint = ModelCheckpoint('PIPELINE2/models/LSTM_eICU_' + str(1) + '.keras', monitor='val_loss', save_best_only=True, mode='min') 
+    checkpoint = ModelCheckpoint('/models/LSTM_eICU_' + str(1) + '.keras', monitor='val_loss', save_best_only=True, mode='min') 
     model.fit([X_t_train, X_s_train],
             y_train,
             validation_data=([X_t_val, X_s_val], y_val),
@@ -115,7 +115,7 @@ def dl_eICU():
             callbacks=[checkpoint, early_stop],verbose=1)
 
     
-    df_test_dl = pd.read_csv('PIPELINE2/data_processed_eicu/test_df_norm_balanced.csv') 
+    df_test_dl = pd.read_csv('/data_processed_eicu/test_df_norm_balanced.csv') 
     df_test_dl = df_test_dl[feats_df]
     X_df_test_dl = df_test_dl.iloc[:, :-1]
     y = df_test_dl.iloc[:, -1]
@@ -164,7 +164,7 @@ def ensemble_eICU():
                       'thres_90': thres_90_dl, 'thres_yuden': thres_yuden_dl}, index=[0])
     ], ignore_index=True)
 
-    y = pd.read_csv('PIPELINE2/data_processed_eicu/test_df_norm_balanced.csv')['label']
+    y = pd.read_csv('/data_processed_eicu/test_df_norm_balanced.csv')['label']
 
     # Ensemble - soft voting - average of predictions
     prob = (prob_ml + prob_dl) / 2
@@ -177,5 +177,5 @@ def ensemble_eICU():
                             'test_auc': auc, 'sen_90': sen_90, 'spec_90': spec_90, 'precision_90': precision_90, 'npv_90': npv_90,
                             'sen_yuden': sen_yuden, 'spec_yuden': spec_yuden, 'precision_yuden': precision_yuden, 'npv_yuden': npv_yuden,
                             'thres_90': thres_90, 'thres_yuden': thres_yuden}, index=[0])], ignore_index=True)
-    results.to_csv('PIPELINE2/results/ENSEMBLE_results_eICU_balanced_test.csv', index=False)
+    results.to_csv('/results/ENSEMBLE_results_eICU_balanced_test.csv', index=False)
 

@@ -6,7 +6,7 @@ import numpy as np
 
 # Avoid hard crashes from missing CUDA/cuDNN runtime libraries.
 # Opt-in GPU usage only when explicitly requested:
-#   SEPSIS_USE_GPU=1 /path/to/python PIPELINE2/DL_balanced.py
+#   SEPSIS_USE_GPU=1 /path/to/python /DL_balanced.py
 if os.environ.get('SEPSIS_USE_GPU', '0') != '1':
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
@@ -35,7 +35,7 @@ tf.random.set_seed(SEED)
 
 def split_temporal_static(obs_win):
 
-    model_feats = joblib.load('PIPELINE2/models/GBM_feat_selection_feat50(40).pkl').feature_names_in_
+    model_feats = joblib.load('/models/GBM_feat_selection_feat50(40).pkl').feature_names_in_
     print(model_feats)
     temporal_selected = []
     static = []
@@ -61,17 +61,17 @@ def split_temporal_static(obs_win):
 
     # all features
     temporal_static = temporal + static + ['label']
-    df_train = pd.read_csv('PIPELINE2/data_processed/train_merged_imputed_flattened_aggregated_binary.csv')
+    df_train = pd.read_csv('/data_processed/train_merged_imputed_flattened_aggregated_binary.csv')
     label = df_train.pop('label')
     df_train['label'] = label
     y_df_train = df_train.iloc[:, -1]
 
-    df_val = pd.read_csv('PIPELINE2/data_processed/val_merged_imputed_flattened_aggregated_binary.csv')
+    df_val = pd.read_csv('/data_processed/val_merged_imputed_flattened_aggregated_binary.csv')
     label = df_val.pop('label')
     df_val['label'] = label
     y_df_val = df_val.iloc[:, -1]
 
-    df_test = pd.read_csv('PIPELINE2/data_processed/test_merged_imputed_flattened_aggregated_binary.csv')
+    df_test = pd.read_csv('/data_processed/test_merged_imputed_flattened_aggregated_binary.csv')
     label = df_test.pop('label')
     df_test['label'] = label
     y_df_test = df_test.iloc[:, -1]
@@ -91,24 +91,24 @@ def split_temporal_static(obs_win):
     print(len(ordered_cols)) #16*24=384
     print(static) #10
     #
-    X_df_train_temporal.to_csv('PIPELINE2/data_processed/train_X_temporal.csv', index=False)
-    X_df_val_temporal.to_csv('PIPELINE2/data_processed/val_X_temporal.csv', index=False)
-    X_df_test_temporal.to_csv('PIPELINE2/data_processed/test_X_temporal.csv', index=False)
-    X_df_train_static.to_csv('PIPELINE2/data_processed/train_X_static.csv', index=False)
-    X_df_val_static.to_csv('PIPELINE2/data_processed/val_X_static.csv', index=False)
-    X_df_test_static.to_csv('PIPELINE2/data_processed/test_X_static.csv', index=False)
-    y_df_train.to_csv('PIPELINE2/data_processed/train_y.csv', index=False)
-    y_df_val.to_csv('PIPELINE2/data_processed/val_y.csv', index=False)
-    y_df_test.to_csv('PIPELINE2/data_processed/test_y.csv', index=False)
+    X_df_train_temporal.to_csv('/data_processed/train_X_temporal.csv', index=False)
+    X_df_val_temporal.to_csv('/data_processed/val_X_temporal.csv', index=False)
+    X_df_test_temporal.to_csv('/data_processed/test_X_temporal.csv', index=False)
+    X_df_train_static.to_csv('/data_processed/train_X_static.csv', index=False)
+    X_df_val_static.to_csv('/data_processed/val_X_static.csv', index=False)
+    X_df_test_static.to_csv('/data_processed/test_X_static.csv', index=False)
+    y_df_train.to_csv('/data_processed/train_y.csv', index=False)
+    y_df_val.to_csv('/data_processed/val_y.csv', index=False)
+    y_df_test.to_csv('/data_processed/test_y.csv', index=False)
 
 
 def normalize():
-    X_df_train_temporal = pd.read_csv('PIPELINE2/data_processed/train_X_temporal.csv')
-    X_df_val_temporal = pd.read_csv('PIPELINE2/data_processed/val_X_temporal.csv')
-    X_df_test_temporal = pd.read_csv('PIPELINE2/data_processed/test_X_temporal.csv')
-    X_df_train_static = pd.read_csv('PIPELINE2/data_processed/train_X_static.csv')
-    X_df_val_static = pd.read_csv('PIPELINE2/data_processed/val_X_static.csv')
-    X_df_test_static = pd.read_csv('PIPELINE2/data_processed/test_X_static.csv')
+    X_df_train_temporal = pd.read_csv('/data_processed/train_X_temporal.csv')
+    X_df_val_temporal = pd.read_csv('/data_processed/val_X_temporal.csv')
+    X_df_test_temporal = pd.read_csv('/data_processed/test_X_temporal.csv')
+    X_df_train_static = pd.read_csv('/data_processed/train_X_static.csv')
+    X_df_val_static = pd.read_csv('/data_processed/val_X_static.csv')
+    X_df_test_static = pd.read_csv('/data_processed/test_X_static.csv')
 
     scaler_temporal = MinMaxScaler()
     scaler_static = MinMaxScaler()
@@ -119,20 +119,20 @@ def normalize():
         print(df.describe())
         df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
         print(df_norm.describe())
-        df_norm.to_csv('PIPELINE2/data_processed/' + name + '_norm.csv', index=False)
+        df_norm.to_csv('/data_processed/' + name + '_norm.csv', index=False)
 
 
 def df_sets_balanced():
 
-    X_df_train_temporal = pd.read_csv('PIPELINE2/data_processed/train_X_temporal_norm.csv')
-    X_df_val_temporal = pd.read_csv('PIPELINE2/data_processed/val_X_temporal_norm.csv')
-    X_df_test_temporal = pd.read_csv('PIPELINE2/data_processed/test_X_temporal_norm.csv')
-    X_df_train_static = pd.read_csv('PIPELINE2/data_processed/train_X_static_norm.csv')
-    X_df_val_static = pd.read_csv('PIPELINE2/data_processed/val_X_static_norm.csv')
-    X_df_test_static = pd.read_csv('PIPELINE2/data_processed/test_X_static_norm.csv')
-    y_df_train = pd.read_csv('PIPELINE2/data_processed/train_y.csv')
-    y_df_val = pd.read_csv('PIPELINE2/data_processed/val_y.csv')
-    y_df_test = pd.read_csv('PIPELINE2/data_processed/test_y.csv')
+    X_df_train_temporal = pd.read_csv('/data_processed/train_X_temporal_norm.csv')
+    X_df_val_temporal = pd.read_csv('/data_processed/val_X_temporal_norm.csv')
+    X_df_test_temporal = pd.read_csv('/data_processed/test_X_temporal_norm.csv')
+    X_df_train_static = pd.read_csv('/data_processed/train_X_static_norm.csv')
+    X_df_val_static = pd.read_csv('/data_processed/val_X_static_norm.csv')
+    X_df_test_static = pd.read_csv('/data_processed/test_X_static_norm.csv')
+    y_df_train = pd.read_csv('/data_processed/train_y.csv')
+    y_df_val = pd.read_csv('/data_processed/val_y.csv')
+    y_df_test = pd.read_csv('/data_processed/test_y.csv')
 
     df_train = pd.concat([X_df_train_temporal, X_df_train_static, y_df_train], axis=1)
     df_train['index'] = range(0, len(df_train))
@@ -159,14 +159,14 @@ def df_sets_balanced():
         split = split.reset_index(drop=True)
         df_train = pd.concat([split, cases_train], axis=0).reset_index(drop=True)
         print(df_train)
-        df_train.to_csv('PIPELINE2/data_processed/train_X_' + str(idx+1) + '_norm.csv', index=False) # delete files without norm (previous preprocessing)
+        df_train.to_csv('/data_processed/train_X_' + str(idx+1) + '_norm.csv', index=False) # delete files without norm (previous preprocessing)
 
     for idx, split in enumerate(splits_val):
         print(f"Part {idx + 1}: {split}")
         split = split.reset_index(drop=True)
         df_val = pd.concat([split, cases_val], axis=0).reset_index(drop=True)
         print(df_val)
-        df_val.to_csv('PIPELINE2/data_processed/val_X_' + str(idx+1) + '_norm.csv', index=False)
+        df_val.to_csv('/data_processed/val_X_' + str(idx+1) + '_norm.csv', index=False)
 
     # temporal, static, y, index
     for idx, split in enumerate(splits_test):
@@ -174,12 +174,12 @@ def df_sets_balanced():
         split = split.reset_index(drop=True)
         df_test = pd.concat([split, cases_test], axis=0).reset_index(drop=True)
         print(df_test)
-        df_test.to_csv('PIPELINE2/data_processed/test_X_' + str(idx+1) + '_norm.csv', index=False)
+        df_test.to_csv('/data_processed/test_X_' + str(idx+1) + '_norm.csv', index=False)
 
 
 def load_data(idx):
 
-    DATA_DIR = 'PIPELINE2/data_processed'
+    DATA_DIR = '/data_processed'
 
     def read(file):
         return pd.read_csv(os.path.join(DATA_DIR, file))
@@ -337,7 +337,7 @@ def fit(model_name, obs_win, lr, epochs, batch_size, model_try):
         y_val = y_df_val.to_numpy().ravel()
 
         early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-        checkpoint = ModelCheckpoint('PIPELINE2/models/' + str(model_name) + '_' + str(model_try) + '.keras', monitor='val_loss', save_best_only=True, mode='min') 
+        checkpoint = ModelCheckpoint('/models/' + str(model_name) + '_' + str(model_try) + '.keras', monitor='val_loss', save_best_only=True, mode='min') 
         #saves model as trained on last dataset with weights where val loss is minimum, every training continues from this, the final model is used for every test set predictions
 
         history = model.fit(
@@ -368,16 +368,16 @@ def fit(model_name, obs_win, lr, epochs, batch_size, model_try):
             plt.plot(history.history['val_loss'], label='Val Loss')
             plt.legend()
             plt.title('Training vs Validation Loss')
-            plt.savefig('PIPELINE2/plots/DL_results_balanced_' + model_name + '_' + str(model_try) + '.png')
+            plt.savefig('/plots/DL_results_balanced_' + model_name + '_' + str(model_try) + '.png')
             plt.show()
 
         # last epoch weights are used for each dataset evaluation (could report best weights)
-        results.to_csv('PIPELINE2/results/DL_results_balanced_' + model_name + '_' + str(model_try) + '.csv', index=False)
+        results.to_csv('/results/DL_results_balanced_' + model_name + '_' + str(model_try) + '.csv', index=False)
 
 
 def predict(model_name, obs_win, model_try):
 
-    results = pd.read_csv('PIPELINE2/results/DL_results_balanced_' + model_name + '_' + str(model_try) + '.csv')
+    results = pd.read_csv('/results/DL_results_balanced_' + model_name + '_' + str(model_try) + '.csv')
     test_loss_list = []
     test_auc_list = []
     probs = pd.DataFrame()
@@ -391,7 +391,7 @@ def predict(model_name, obs_win, model_try):
         y_np = y_test.to_numpy().ravel()
 
         # model with weights from lower val loss on final dataset is used for predictions on test set of all datasets (checkpoint callback)
-        model_path = 'PIPELINE2/models/' + str(model_name) + '_' + str(model_try) + '.keras'
+        model_path = '/models/' + str(model_name) + '_' + str(model_try) + '.keras'
         print(f"Loading model from: {model_path}")
         model = load_model(
             model_path,
@@ -409,14 +409,14 @@ def predict(model_name, obs_win, model_try):
         probs = pd.concat([probs, prob], axis=1)
     probs.columns = list(range(1, 41))
     probs.to_csv(
-        'PIPELINE2/predictions/' + str(model_name) + '_' + str(model_try) + '_balanced_prob' + '.csv', index=False)
+        '/predictions/' + str(model_name) + '_' + str(model_try) + '_balanced_prob' + '.csv', index=False)
 
     results['test_loss'] = test_loss_list
     results['test_auc'] = test_auc_list
     print('Average Test Loss: ', results['test_loss'].mean().round(2))
     print('Average Test AUC: ', results['test_auc'].mean().round(2))
 
-    results.to_csv('PIPELINE2/results/DL_results_balanced_' + model_name + '_' + str(model_try) + '.csv', index=False)
+    results.to_csv('/results/DL_results_balanced_' + model_name + '_' + str(model_try) + '.csv', index=False)
 
 
 def run_dl(model_name, obs_win, lr, epochs, batch_size, model_try):

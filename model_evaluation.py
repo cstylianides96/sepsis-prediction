@@ -74,12 +74,12 @@ def plot_all_metrics_ensemble():
     # Load Data
     y_test_df = pd.DataFrame()
     for idx in range(0, 40):
-        df_test = pd.read_csv(f'PIPELINE2/data_processed/test_{idx + 1}.csv').iloc[:, :-1]
+        df_test = pd.read_csv(f'/data_processed/test_{idx + 1}.csv').iloc[:, :-1]
         y_test = df_test.iloc[:, -1]
         y_test_df = pd.concat([y_test_df, y_test], axis=1)
     y_test_df.columns = list(range(1, 41))
 
-    prob_avg_df = pd.read_csv('PIPELINE2/predictions/GBM-LSTM_balanced_prob.csv')
+    prob_avg_df = pd.read_csv('/predictions/GBM-LSTM_balanced_prob.csv')
 
     # Set up Subplots (2x2 grid)
     fig, axs = plt.subplots(2, 2, figsize=(18, 14))
@@ -192,5 +192,5 @@ def plot_all_metrics_ensemble():
     ax_dca.tick_params(axis='both', labelsize=14)
 
     plt.tight_layout()
-    plt.savefig('PIPELINE2/plots/GBM-LSTM_balanced_allplots.png', dpi=300)
+    plt.savefig('/plots/GBM-LSTM_balanced_allplots.png', dpi=300)
     plt.show()

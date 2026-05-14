@@ -5,9 +5,9 @@ import pandas as pd
 # Split TRAIN, VAL, TEST sets into balanced sets of cases and controls (40 splits for each set)
 def df_train_sets_balanced(encoded=False):
     if encoded:
-        df_train = pd.read_csv('PIPELINE2/data_processed/train_selected_feat40_names_encoded.csv')
+        df_train = pd.read_csv('/data_processed/train_selected_feat40_names_encoded.csv')
     else:
-        df_train = pd.read_csv('PIPELINE2/data_processed/train_selected_feat40.csv')
+        df_train = pd.read_csv('/data_processed/train_selected_feat40.csv')
     df_train['index'] = range(0, len(df_train))
     print(df_train['label'].value_counts())
 
@@ -21,16 +21,16 @@ def df_train_sets_balanced(encoded=False):
         split = split.reset_index(drop=True)
         df_train = pd.concat([split, cases_train], axis=0).reset_index(drop=True)
         if encoded:
-            df_train.to_csv('PIPELINE2/data_processed/train_' + str(idx+1) + '_encoded.csv', index=False)
+            df_train.to_csv('/data_processed/train_' + str(idx+1) + '_encoded.csv', index=False)
         else:
-            df_train.to_csv('PIPELINE2/data_processed/train_' + str(idx+1) + '.csv', index=False)
+            df_train.to_csv('/data_processed/train_' + str(idx+1) + '.csv', index=False)
 
 
 def df_val_sets_balanced(encoded=False):
     if encoded:
-        df_val = pd.read_csv('PIPELINE2/data_processed/val_selected_feat40_names_encoded.csv')
+        df_val = pd.read_csv('/data_processed/val_selected_feat40_names_encoded.csv')
     else:
-        df_val = pd.read_csv('PIPELINE2/data_processed/val_selected_feat40.csv')
+        df_val = pd.read_csv('/data_processed/val_selected_feat40.csv')
     df_val['index'] = range(0, len(df_val))
     print(df_val['label'].value_counts())
 
@@ -45,16 +45,16 @@ def df_val_sets_balanced(encoded=False):
         df_val = pd.concat([split, cases_val], axis=0).reset_index(drop=True)
         # print(df_val)
         if encoded:
-            df_val.to_csv('PIPELINE2/data_processed/val_' + str(idx+1) + '_encoded.csv', index=False)
+            df_val.to_csv('/data_processed/val_' + str(idx+1) + '_encoded.csv', index=False)
         else:
-            df_val.to_csv('PIPELINE2/data_processed/val_' + str(idx+1) + '.csv', index=False)
+            df_val.to_csv('/data_processed/val_' + str(idx+1) + '.csv', index=False)
 
 
 def df_test_sets_balanced(encoded=False):
     if encoded:
-        df_test = pd.read_csv('PIPELINE2/data_processed/test_selected_feat40_names_encoded.csv')
+        df_test = pd.read_csv('/data_processed/test_selected_feat40_names_encoded.csv')
     else:   
-        df_test = pd.read_csv('PIPELINE2/data_processed/test_selected_feat40.csv')
+        df_test = pd.read_csv('/data_processed/test_selected_feat40.csv')
     df_test['index'] = range(0, len(df_test))
     print(df_test['label'].value_counts())
 
@@ -69,9 +69,9 @@ def df_test_sets_balanced(encoded=False):
         df_test = pd.concat([split, cases_test], axis=0).reset_index(drop=True)
         # print(df_test)
         if encoded:
-            df_test.to_csv('PIPELINE2/data_processed/test_' +str(idx+1)+'_encoded.csv', index=False)
+            df_test.to_csv('/data_processed/test_' +str(idx+1)+'_encoded.csv', index=False)
         else:
-            df_test.to_csv('PIPELINE2/data_processed/test_' +str(idx+1)+'.csv', index=False)
+            df_test.to_csv('/data_processed/test_' +str(idx+1)+'.csv', index=False)
 
 def create_balanced_datasets(encoded=False):
     df_train_sets_balanced(encoded=encoded)

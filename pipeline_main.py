@@ -13,7 +13,7 @@ from xai_preprocess import itemid_to_name_dataset, categorize
 from balanced_datasets import create_balanced_datasets
 from probs_to_pred import probs_to_pred
 from ML_balanced import run_ml_balanced, run_ml_average
-from DL_balanced import run_dl
+from DL_balanced2 import run_dl
 from results_DL import overall_results_DL, overall_results_DL_updated
 from ensemble import run_ensemble
 from model_evaluation import plot_all_metrics_ensemble

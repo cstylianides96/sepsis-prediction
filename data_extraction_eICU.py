@@ -7,11 +7,11 @@ import math
 import random
 
 
-cohort = pd.read_csv("PIPELINE2/data_processed_eicu/sepsis3_eicu.csv")
+cohort = pd.read_csv("/data_processed_eicu/sepsis3_eicu.csv")
 print(cohort.label.value_counts(normalize=True))
 cases_ids = cohort[cohort['label'] == 1]['patientunitstayid'].tolist()
 controls_ids = cohort[cohort['label'] == 0]['patientunitstayid'].tolist()
-patients = pd.read_csv("PIPELINE2/data_raw_eicu_v2.0/patient.csv.gz", compression='gzip')
+patients = pd.read_csv("/data_raw_eicu_v2.0/patient.csv.gz", compression='gzip')
 patientunitstayid = patients[patients['patientunitstayid'].isin(cohort['patientunitstayid'])]['patientunitstayid'].tolist()
 print(len(patientunitstayid))
 discharge_df = (
@@ -22,7 +22,7 @@ print(len(discharge_df))
 
 
 def extract_lab():
-    lab = pd.read_csv("PIPELINE2/data_raw_eicu_v2.0/lab.csv.gz", compression='gzip')
+    lab = pd.read_csv("/data_raw_eicu_v2.0/lab.csv.gz", compression='gzip')
     # Ensure values after icu adm, before discharge (vectorized)
     lab_filtered = lab.merge(discharge_df, on='patientunitstayid', how='inner')
     lab_filtered = lab_filtered[
@@ -37,12 +37,12 @@ def extract_lab():
                                                               'creatinine',  'alkaline phos.', 'CRP', 'phosphate'])]
     print(lab_filtered)
     print(len(lab_filtered.patientunitstayid.unique()))
-    lab_filtered.to_csv("PIPELINE2/data_processed_eicu/lab_filtered.csv", index=False)
+    lab_filtered.to_csv("/data_processed_eicu/lab_filtered.csv", index=False)
     # lab = lab.groupby(['patientunitstayid', 'labname'], as_index=False)
 
 
 def extract_nurseCharting():
-    nurse = pd.read_csv("PIPELINE2/data_raw_eicu_v2.0/nurseCharting.csv.gz", compression='gzip')
+    nurse = pd.read_csv("/data_raw_eicu_v2.0/nurseCharting.csv.gz", compression='gzip')
     # Ensure values after icu adm, before discharge (vectorized)
     nurse_filtered = nurse.merge(discharge_df, on='patientunitstayid', how='inner')
     nurse_filtered = nurse_filtered[
@@ -62,17 +62,17 @@ def extract_nurseCharting():
     print(nurse)
     print(len(nurse.patientunitstayid.unique()))
     print(nurse.nursingchartcelltypevalname.value_counts()) 
-    nurse.to_csv("PIPELINE2/data_processed_eicu/nurse_filtered.csv", index=False)
+    nurse.to_csv("/data_processed_eicu/nurse_filtered.csv", index=False)
 
 
 def extract_hosp_time():
-    patient = pd.read_csv("PIPELINE2/data_raw_eicu_v2.0/patient.csv.gz", compression='gzip')
+    patient = pd.read_csv("/data_raw_eicu_v2.0/patient.csv.gz", compression='gzip')
     patient = patient[patient['patientunitstayid'].isin(cohort['patientunitstayid'])]
     hosp_time = patient[['patientunitstayid', 'hospitaladmitoffset']]
     hosp_time['hospitaladmitoffset'] = -hosp_time['hospitaladmitoffset']
     hosp_time = hosp_time[hosp_time['hospitaladmitoffset'] >= 0]
     hosp_time['hospitaladmitoffset'] = hosp_time['hospitaladmitoffset'] / 60  # convert to hours
-    hosp_time.to_csv("PIPELINE2/data_processed_eicu/hosp_time.csv", index=False)
+    hosp_time.to_csv("/data_processed_eicu/hosp_time.csv", index=False)
     print(patient)
 
 

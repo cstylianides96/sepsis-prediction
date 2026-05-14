@@ -6,20 +6,20 @@ import numpy as np
 from sklearn.preprocessing import OrdinalEncoder
 
 def itemid_to_name_dataset():
-    model = joblib.load('PIPELINE2/models/GBM_feat_selection_feat50(40).pkl')
+    model = joblib.load('/models/GBM_feat_selection_feat50(40).pkl')
     model_feats = model.feature_names_in_.tolist()
     print(model_feats)
-    X_train = pd.read_csv('PIPELINE2/data_processed/train_selected_feat40.csv')
-    X_val = pd.read_csv('PIPELINE2/data_processed/val_selected_feat40.csv')
-    X_test = pd.read_csv('PIPELINE2/data_processed/test_selected_feat40.csv')
+    X_train = pd.read_csv('/data_processed/train_selected_feat40.csv')
+    X_val = pd.read_csv('/data_processed/val_selected_feat40.csv')
+    X_test = pd.read_csv('/data_processed/test_selected_feat40.csv')
     print(X_test)
-    y_train = pd.read_csv('PIPELINE2/data_processed/train_selected_feat40.csv').iloc[:, -1]
-    y_val = pd.read_csv('PIPELINE2/data_processed/val_selected_feat40.csv').iloc[:, -1]
-    y_test = pd.read_csv('PIPELINE2/data_processed/test_selected_feat40.csv').iloc[:, -1]
+    y_train = pd.read_csv('/data_processed/train_selected_feat40.csv').iloc[:, -1]
+    y_val = pd.read_csv('/data_processed/val_selected_feat40.csv').iloc[:, -1]
+    y_test = pd.read_csv('/data_processed/test_selected_feat40.csv').iloc[:, -1]
     X_cols = model_feats
 
-    itemids = pd.read_csv('PIPELINE2/data_raw/d_items.csv')[['itemid', 'label', 'linksto']]
-    icd10_codes = pd.read_csv('PIPELINE2/data_raw/icd10cm_codes_2024.csv')
+    itemids = pd.read_csv('/data_raw/d_items.csv')[['itemid', 'label', 'linksto']]
+    icd10_codes = pd.read_csv('/data_raw/icd10cm_codes_2024.csv')
     importances = model.feature_importances_
     indices = np.argsort(importances)[::-1]  # most important to least important
     items = [X_cols[i] for i in indices]
@@ -58,14 +58,14 @@ def itemid_to_name_dataset():
         else:  # gender/age/hosp_to_icu
             labels.append(item)
     labels = pd.DataFrame(labels).reset_index(drop=True)
-    labels.to_csv('PIPELINE2/data_processed/features_ranked.csv', index=False)
+    labels.to_csv('/data_processed/features_ranked.csv', index=False)
 
     for X, y, name in [(X_train, y_train, 'train'), (X_val, y_val, 'val'), (X_test, y_test, 'test')]:
         X = X[items]
         X.columns = labels.iloc[:, 0].tolist()
         df = pd.concat([X,y], axis=1)
         print(df)
-        df.to_csv('PIPELINE2/data_processed/' + name + '_selected_feat40_names.csv', index=False)
+        df.to_csv('/data_processed/' + name + '_selected_feat40_names.csv', index=False)
 
     # get unique labels and their categories (most imp to least imp)
     unique_labels = []
@@ -84,14 +84,14 @@ def itemid_to_name_dataset():
     unique_labels = pd.DataFrame(zip(unique_labels, categories)).reset_index(drop=True)
     unique_labels.columns = ['label', 'category']
     unique_labels = unique_labels.drop_duplicates().reset_index(drop=True) 
-    unique_labels.to_csv('PIPELINE2/data_processed/unique_features_ranked.csv', index=False)
+    unique_labels.to_csv('/data_processed/unique_features_ranked.csv', index=False)
 
 
 def categorize():
-    df_train = pd.read_csv('PIPELINE2/data_processed/train_selected_feat40_names.csv')
+    df_train = pd.read_csv('/data_processed/train_selected_feat40_names.csv')
     print(df_train.columns)
-    df_val = pd.read_csv('PIPELINE2/data_processed/val_selected_feat40_names.csv')
-    df_test = pd.read_csv('PIPELINE2/data_processed/test_selected_feat40_names.csv')
+    df_val = pd.read_csv('/data_processed/val_selected_feat40_names.csv')
+    df_test = pd.read_csv('/data_processed/test_selected_feat40_names.csv')
 
     for df, name in [(df_train, 'train'), (df_val, 'val'), (df_test, 'test')]:
         temporal_cols_categories = {
@@ -160,7 +160,7 @@ def categorize():
                     oe = OrdinalEncoder(categories=[rules['labels']])
                     df[var] = oe.fit_transform(df[[var]]).astype(int)
 
-        df.to_csv(f'PIPELINE2/data_processed/{name}_selected_feat40_names_encoded.csv', index=False)
+        df.to_csv(f'/data_processed/{name}_selected_feat40_names_encoded.csv', index=False)
 
 
             # 'gcs_sum': {

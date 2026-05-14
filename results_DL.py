@@ -8,7 +8,7 @@ from keras_core.metrics import AUC
 
 def overall_results_DL():
 
-    directory = 'PIPELINE2/results'
+    directory = '/results'
     obs_win = 24
 
     # Result container
@@ -34,7 +34,7 @@ def overall_results_DL():
     result_df = pd.DataFrame(compiled_data, columns=['model_name', 'model_ver', 'train_loss', 'train_auc', 'val_loss', 'val_auc', 'test_loss', 'test_auc'])
     result_df = result_df.sort_values(by=['model_name', 'model_ver'])
     result_df = result_df.reset_index(drop=True)
-    result_df.to_csv('PIPELINE2/results/DL_results_balanced.csv', index=False)
+    result_df.to_csv('/results/DL_results_balanced.csv', index=False)
     print(result_df)
 
 
@@ -51,10 +51,10 @@ def overall_results_DL_updated(model_list, ver_list):
                                             'test_npv_yuden', 'thres_90', 'thres_yuden', 'acc_90', 'acc_yuden'])
         for idx in range(40):
             probs = pd.read_csv(
-                'PIPELINE2/predictions/' + str(model) + '_' + str(ver) + '_balanced_prob' + '.csv').iloc[:, idx]
+                '/predictions/' + str(model) + '_' + str(ver) + '_balanced_prob' + '.csv').iloc[:, idx]
             probs = probs.dropna()
             #print(probs)
-            y_test = pd.read_csv('PIPELINE2/data_processed/test_X_' + str(idx+1) + '.csv')['label']
+            y_test = pd.read_csv('/data_processed/test_X_' + str(idx+1) + '.csv')['label']
 
             test_auc, sen_90, spec_90, precision_90, npv_90, sen_yuden, spec_yuden, precision_yuden, npv_yuden, \
             thres_90, thres_yuden, acc_90, acc_yuden = evaluate(probs, y_test, acc=True)
@@ -64,7 +64,7 @@ def overall_results_DL_updated(model_list, ver_list):
             results_model.loc[len(results_model)] = [test_auc, sen_90, spec_90, precision_90, npv_90, sen_yuden, spec_yuden,
                                          precision_yuden, npv_yuden, thres_90, thres_yuden, acc_90, acc_yuden]
 
-        results_model.to_csv('PIPELINE2/results/DL_results_balanced_' + model + '_' + str(ver) + '_allmetrics.csv', index=False)
+        results_model.to_csv('/results/DL_results_balanced_' + model + '_' + str(ver) + '_allmetrics.csv', index=False)
         results_mean = results_model.mean(axis=0)
         results_mean = results_mean.drop(['thres_90', 'thres_yuden'])
         # results_sd = results_model.std()
@@ -74,12 +74,12 @@ def overall_results_DL_updated(model_list, ver_list):
     print(results_new)
     results_new['model_name'] = model_list
     results_new['ver'] = ver_list
-    results_new.to_csv('PIPELINE2/results/DL_results_balanced_updated.csv', index=False)
+    results_new.to_csv('/results/DL_results_balanced_updated.csv', index=False)
 
 # overall_results_DL_updated(['1DCNN', '1DCNN-LSTM', 'LSTM', 'TCN'], [15, 8, 15, 6])
 
 # model = load_model(
-#     'PIPELINE2/models/TCN_6.keras',
+#     '/models/TCN_6.keras',
 #     compile=True,
 #     custom_objects={'AUC': AUC()})
 # model.summary()
