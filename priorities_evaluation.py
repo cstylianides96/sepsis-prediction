@@ -144,7 +144,7 @@ def prediction(column_labels, selected_path):
     labels = test['label']
 
     # Read prediction data to get the predicted labels
-    df = pd.read_csv('predictions/GBM_obs24_pred12_feat70_balanced_pred' + str(i) + '_3_encoded.csv')
+    df = pd.read_csv('predictions/ML_pred_balanced_' + str(i) + '.csv')
 
     # Get the predictions
     predictions = df['pred']

@@ -4,7 +4,7 @@
 [Citation]
 
 ### Aim
-ML pipeline for sepsis diagnosis 12 hours in advance, by using 24 hours of clinical data (MIMIC-IV) and applying ML, DL, and Ensemble models. The pipeline is supported by a rule-based explainability method and argumentation-based reasoning.
+ML pipeline for sepsis diagnosis 12 hours in advance, by using 24 hours of clinical data (MIMIC-IV) and applying ML, DL, and Ensemble models. The pipeline is supported by a rule-based explainability method and argumentation-based reasoning. The pipeline is externally validated on the eICU dataset.
 
 ### System Specifications
 Parallel data preprocessing was performed on an HPC cluster running Rocky Linux 8.5, featuring multiple compute nodes
@@ -16,102 +16,68 @@ using keras-core with the TensorFlow backend and executed on the CPU.
 ------------------------------------------------------------------------------------------------------------------------
 ### Steps to use this repository
 1. Install all required packages from the **requirements.txt** file.
-2. Create the following directories: 'data_raw', 'data_per_patient', 'data_processed', 'models', 'plots', 'results', 
-'predictions', 'thresholds', 'xai-output'.
+2. Create the following directories: 'data_raw', 'data_raw_eicu_v2.0', 'data_processed', 'data_processed_eicu', 'models', 'plots', 'results', 
+'predictions', 'xai-output'.
 3. Download raw [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) data and create the ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis)
 table. Save them in the 'data_raw' directory. 
-4. Run **pipeline_main.py** for the full pipeline.
+4. Download raw [eICU v2.0](https://physionet.org/content/eicu-crd/2.0/) data. Save them in the 'data_raw_eicu_v2.0' directory.
+5. Run **pipeline_main.py** for the full pipeline.
 
-The final GBM and LSTM models discussed in the paper are provided in the 'models' directory. Data in the form they were
-inputted in the models are also provided in the 'data_processed' directory.
+Data as they were used in models after processing are provided in the 'data_processed' and  'data_processed_eicu' directories.
 
 ------------------------------------------------------------------------------------------------------------------------
 
 ### Functions used in pipeline_main.py
+
 **create_cohort()**: Creates cases and controls cohort using MIMIC-IV v2.2 and the 'sepsis3' table where cases are
 identified according to the Sepsis-3 definition. Generates *sepsis3_processed.csv*.
 
-**preproc_raw_feat()**: Converts ICD-9 codes to ICD-10 codes, removes outliers lower than the 2nd percentile and above 
-the 98th percentile and imputs with the value at the 2nd and 98th percentile, respectively.
-Generates diagnoses, input, output, procedure and charted data, and their summaries.
+**extract_data()**: Extracts charted data, diagnoses and demographics. Generates *sepsis_chartevents.csv*, *sepsis_diagnoses.csv*, *sepsis_demographics.csv*.
 
-**create_data_per_patient()**: Timestep checks, resampling, imputation. Generates *labels_sepsis.csv* and 3 csvs for each
-patient: *demo.csv* (demographic), *dynamic.csv* (temporal), *static.csv* (diagnoses).
 
-**create_datasets_imputed()**: Combines patient csvs into single dataset, selects cases and controls, performs
-one-hot-encoding, KNN imputation for missing charted data, feature engineering, train-test split, feature selection.
-Generates *obs24_pred12_processed.csv*, *obs24_pred12_imputed.csv*, *obs24_pred12_stayids.csv*,
-*obs24_pred12_ratios.csv*, *obs24_pred12_gcs.csv*, *obs24_pred12_stats.csv*, *obs24_pred12_imputed_train.csv*,
-*obs24_pred12_imputed_test.csv*,  *obs24_pred12_imputed_train_fs2.csv*, *obs24_pred12_imputed_train_fs2_1000.csv*.
+**preprocess()**: Cleaning, temporal data handling, feature engineering, data splits and feature selection.
 
-**create_datasets_scorsys()**: Further feature engineering on obs24_pred12_imputed.csv features according to scoring systems
-and clinicians' suggestions, encoding of specific features, train-test split, feature selection on the new training set. 
-Generates *os24_pred12.csv*, *obs24_pred12_pfratio.csv*, *obs24_pred12_shockindex.csv*, *obs24_pred12_temp.csv*, *obs24_pred12_map.csv*, 
-*obs24_pred12_fspn.csv*, *obs24_pred12_qsofa.csv*, *obs24_pred12_dop.csv*, *obs24_pred12_dopepinephnor_a.csv*, 
-*obs24_pred12_dopepinephnor_b.csv*, *obs24_pred12_stats.csv*, *obs24_pred12_dig.csv*, *obs24_pred12_all.csv*, *obs24_pred12_all_changes*.
-
-**create_datasets_clean()**: Concatenates features generated in the previous 2 functions and removes duplicates, encodes as
-binary features coming from device measurements*, encodes as binary input events, train-test split.
-Generates *obs24_pred12.csv*, *obs24_pred12_3.csv*, *obs24_pred12_train_3.csv*, *obs24_pred12_test_3.csv*.
-
-*We assume that any chartevent variable belonging in the 'Impella', 'IABP', 'PiCCO', 'NICOM', 'ECMO', 'Centrimag', 
-'Cardiovascular (Pacer Data)', 'Dialysis', 'Access Lines - Invasive', 'Hemodynamics', 'Skin - Impairment', 'Treatments', 
-'Pain / Sedation', or 'Alarms' category with more than 60% missingness across patients came from specialized devices 
-used by the minority of ICU patients. Therefore, these variables were Missing Not At Random (MNAR) and were not suitable 
-for imputation. We encoded them as binary depending on whether a value exists/the device was used for a patient. 
-Any remaining missing chartevent data were imputed using the K-Nearest Neighbour imputation method.
-
-**data_subjects()**: Records subjects per class and data split. Generates *data_subjects.csv*.
-
-**run_ml()**: Runs traditional ML models. RF, GBM, XGB, LGBM, AdaBoost, MLP supported. Model name, observation window, 
-prediction window, number of cross validation splits and number of most important features for refitting model are required.
-Generates models, prediction probabilities, performance results, importance plots, ROC and Precision-Recall curves.
-
-**itemid_to_name_dataset()**: Converts all itemid names of variables to their labels, Model name, observation window,
-prediction window, number of features used and model path name are required. Generates
-*DFtrain_GBM_obs24_pred12_feat70_clean_3.csv*, *DFtest_GBM_obs24_pred12_feat70_clean_3.csv*,
-*BEST_set5_GBM_obs24_pred12_feat70_clean_3.csv* with all feature names in order of importance and
-*BEST_set5_GBM_obs24_pred12_feat70_unique_clean_3.csv* with unique feature names and their mimic-iv category in order of
-importance.
+**run_gbm(n_feat_imp=40)**: Feature selection using a GBM model. FInal iteration where the 40 most important features were selected from the last 50 and were chosen for final model based on AUC change on validation dataset. Model, results, predictions, importance plot are saved.
+    
+**gbm_feat_selection()**: Selects final features from datasets. Generates *train_selected_feat40.csv*, *val_selected_feat40.csv*, *test_selected_feat40.csv*.
+    
+**data_subjects()**: Records subjects per class and data split. Generates *data_subjects.csv* and *data_subjects_percentages.csv*.
 
 **dataset_stats()**: Prints descriptive stats on the entire dataset (train and test sets).
 
-**categorize()**: Encodes specific features according to [Med Calc](https://www.mdcalc.com/) and associate sites. 
-Preliminary step for XAI. Generates *DFtrain_GBM_obs24_pred12_feat70_clean_3_encoded.csv* and 
-*DFtest_GBM_obs24_pred12_feat70_clean_3_encoded.csv*.
+**demo_stats()**: Prints descriptive stats of demographic variables on the entire dataset (train and test sets).
 
-**histogram_plots()**: Creates histogram plots for training set.
+**create_balanced_datasets(encoded=False)**: Splits train, validation and test sets into balanced sets (40 equal sized balanced datasets for each set).
 
-**df_train_sets_balanced()**: Generates 41 balanced training sets.
-**df_test_sets_balanced()**: Generates 41 balanced test sets.
+**run_ml_balanced(encoded=False)**: Runs a GBM model with 5-fold CV on each balanced dataset. Saves results and predictions for each.
 
-**run_ml_balanced()**: Runs GBM over 41 balanced training sets. Model name and number of cross validation splits are required.
-Generates 41 *_balanced_probX_3.csv* files in the 'predictions' directory, *_results_balanced_3.csv* in
-the 'results' directory, and a thresholds file in the 'thresholds' directory.
+**run_ml_average(encoded=False)**: Prints average of results across the 40 datasets.
 
-**run_ml_balanced_encoded()**: Same functionality as run_ml_balanced() based on the encoded datasets.
+**probs_to_pred()**: Generates predicted labels out of probability labels for XAI priorities evaluation in the 40 datasets. Model name (GBM, LSTM, GBM-LSTM) is required.
+ 
+**run_dl()**: Runs DL models. Requires  model name (LSTM, 1DCNN, TCN, 1DCNN-LSTM), observation window (24), prediction window (12), learning rate, number of epochs, batch size, and number of model try.
 
-**run_ml_average()**: Prints average metrics across the 41 balanced datasets.
+**overall_results_DL()**: Extracts results at the end of each model training (at 40th training and validation sets) and average test set results (across the 40 datasets). Generates *DL_results_balanced.csv*.
 
-**probs_to_pred_thres_90()**: Generates predicted labels out of probability labels for XAI priorities evaluation in the 41
-balanced datasets in the 'predictions' directory. Model name is required.
+**overall_results_DL_updated()**: Updates results of selected models with more metrics. Requires a list of the selected model names and a list of their corresponding model tries. Generates *DL_results_balanced_updated.csv*.
 
-**run_dl()**: Runs LSTM, CNN, CNN-LSTM and TCN models over the 41 balanced training sets. Model name, learning rate, 
-epoch number, batch size and model try number are required. 
+**run_ensemble()**: Saves average predictions of ensemble model and its results.
 
-**overall_results_DL()**: Extracts AUC and loss values of the 41st train and val sets (end of training) and the average  
-AUC and loss values across the 41 test sets. Generates *'results_DL.csv'*.
+**plot_all_metrics_ensemble()**: Plots ROC, Precision-Recall, Calibration and Net Benefit Curves for the 40 datasets in 4 subplots. Generates *GBM-LSTM_balanced_allplots.png*
+    
+**itemid_to_name_dataset()**: Converts all itemids of the selected variables to their labels as a preprocessing step for XAI. Saves the new dataset with the updated column names. Saves feature names from most to least important and the unique features with the category they belong to.
 
-**overall_results_DL_updated()**: Generates more performance metrics of selected models. A model names list and their
-corresponding selected versions list are required. Generates *results_DL_new.csv*.
-
-**run_ensemble()**: Averages predictions of GBM and H-LSTM to provide performance metrics for the 41 test sets and print
-the mean performance across them.
-
-**plot_all_metrics_ensemble()**: Plots ROC, Precision-Recall, Calibration and Net Benefit Curves for the 41 datasets in 
-4 subplots. Generates *GBM-LSTM_obs24_pred12_ALL_PLOTS.png*.
+**categorize()**: Encodes specific features according to [Med Calc](https://www.mdcalc.com/) and associate sites as a preprocessing step for XAI. Saves encoded datasets.
 
 **run_xai()**: Performs Explainable AI: rule extraction and selection. Argumentation-based reasoning is implemented in 
 Prolog and executed using Gorgias Cloud. To run the argumentation algorithm, you'll need to construct the argumentation 
 theory using the findings obtained from rule extraction and selection. More information 
 on how to use Gorgias Cloud can be found [here](http://gorgiasb.tuc.gr/GorgiasCloud.html).
+
+**create_cohort_eICU()**: Creates cohort from the eICU dataset identidying cases and controls in the same way as for MIMIC-IV.
+
+**extract_data_eICU()**: Extracts corresponding eICU variables.
+
+**preprocess_eICU()**: Preprocess eICU data in the same way MIMIC-IV data were preprocessed.
+
+**ensemble_eICU()**: Runs the GBM and LSTM models developped on MIMIC-IV, averages predictions and computes metrics for the ensemble. Saves results.

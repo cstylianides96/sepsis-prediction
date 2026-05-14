@@ -35,19 +35,18 @@ def run_xai():
     group2 = 'NoSepsis'
     
     # Define the column names
-    column_labels = ['replete_fiber_10' , 'WBC_3_diff', 'arterial_blood_pressure_mean_8_diff', 'glucerna15_0', 'furosemide_lasix_0',
-    'tandem_heart_flow_8', 'fibersourceHN_0', 'arterial_blood_pressure_mean_10_diff', 'RRApacheIIValue_5', 'sodium_wholeblood_19',
-    'arterial_blood_pressure_mean_18', 'pinsp_hamilton_range', 'PH_arterial_10', 'potassium_whole_blood_max', 'nepro_0', 'SV_arterial_13',
-    'osmolite15_0', 'calcium_non_ionized_range', 'temperature_celsius_range', 'arterial_blood_pressure_systolic_11_diff', 'O2_flow_23',
-    'shock_index_18_diff', 'WBC_1_diff', 'arterial_blood_pressure_systolic_22_diff', 'promote_0', 'urinary_tract_infection_not_specified',
-    'arterial_blood_pressure_systolic_14_diff', 'SV_arterial_min', 'dextrose5_0', 'heart_rate_14_diff', 'shock_index_9_diff', 'shock_index_14_diff',
-    'spontRR_range', 'arterial_blood_pressure_systolic_23', 'milrinone_0', 'temperature_celsius_0', 'jevity15_0', 'promoteFiber_0', 'heparinSodium_0',
-    'furosemide_Lasix_250_50_0', 'negativeInspForce_mean', 'heartRate_16_diff', 'repleteFiber_0', 'PH_arterial_22', 'GCS_eyeOpening1_diff',
-    'arterial_blood_pressure_systolic_19_diff', 'arterial_blood_pressure_mean_11', 'propofol_0', 'arterial_blood_pressure_systolic_16', 'gcs_sum_23',
-    'O2_flow_mean', 'dexmedetomidine_precedex_0', 'TFCd_NICOM_max', 'jevity12_0', 'pf_ratio_a_range', 'arterial_blood_pressure_systolic_min',
-    'tandem_heart_flow_10', 'nacl09_1', 'calcium_gluconateCRRT_0', 'PH_arterial_0', 'fspn_high_2', 'BUN_3_diff', 'WBC_2_diff', 'BUN_4_diff',
-    'glucerna12_0', 'hosp_to_icu', 'phosphorous_range', 'BUN_2_diff', 'nacl09_0', 'BUN_1_diff', 'label', 'Index']
-    
+    column_labels = ['Arterial Blood Pressure diastolic_diff_0', 'hosp_to_icu', 'Glucose (serum)_range', 
+                     'GCS - Verbal Response_max', 'Arterial Blood Pressure systolic_range', 'Arterial Blood Pressure mean_diff_0',
+                     'WBC_range', 'Arterial Blood Pressure systolic_diff_0', 'BUN_diff_0', 'BUN_diff_1',
+                     'Arterial Blood Pressure systolic_21', 'Glucose (serum)_diff_1', 'GCS - Verbal Response_23',
+                     'Hematocrit (serum)_diff_2', 'Arterial Blood Pressure mean_diff_19', 'BUN_diff_2', 'GCS - Motor Response_0',
+                     'Arterial Blood Pressure diastolic_diff_2', 'LDH_diff_0,Sodium (serum)_mean', 'Arterial Blood Pressure mean_14',
+                     'Glucose (serum)_diff_0', 'Fibrinogen_14', 'Arterial Blood Pressure mean_diff_10', 'LDH_diff_5', 
+                     'Magnesium_3', 'Differential-Lymphs_diff_1', 'Sodium (serum)_diff_1', 'Glucose (serum)_diff_2', 
+                     'Creatinine (serum)_mean', 'Alkaline Phosphate_diff_18', 'Differential-Lymphs_diff_0', 
+                     'Respiratory Rate_range', 'LDH_min', 'Differential-Lymphs_diff_22', 'Arterial Blood Pressure systolic_diff_20',
+                     'Heart Rate_diff_0', 'Hematocrit (serum)_4', 'C Reactive Protein (CRP)_diff_12', 'Phosphorous_range',
+                     'label', 'index']
     
     # --------- Rule extraction ---------
     print('Rule extraction..')

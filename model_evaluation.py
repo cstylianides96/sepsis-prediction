@@ -18,7 +18,7 @@ def youden_index(y_true, y_probs, threshold):
     return sensitivity + specificity - 1
 
 
-def evaluate(prob, actual, model_name, obs_win, pred_win, n_feat, acc):
+def evaluate(prob, actual, acc):
 
     auc = np.round(roc_auc_score(actual, prob), 5)
 
@@ -28,15 +28,6 @@ def evaluate(prob, actual, model_name, obs_win, pred_win, n_feat, acc):
     sen_fpr_thres = pd.DataFrame(zip(thresholds, tpr, fpr),
                                  columns=['thresholds', 'sen', 'fpr']).sort_values(by='sen',
                                                                                    ascending=False).reset_index(drop=True)
-    if acc==False: # imbalanced dataset
-        display_roc = RocCurveDisplay.from_predictions(
-            actual, prob, name=model_name, plot_chance_level=True)
-        display_roc.ax_.set_title(
-            "ROC: " + model_name + ', obs ' + str(obs_win) + ', pred ' + str(pred_win) + ', feat ' + str(n_feat),
-            fontsize=16)
-        plt.savefig(
-            'plots/' + model_name + '_obs' + str(obs_win) + '_pred' + str(pred_win) + '_feat' + str(n_feat) + '_ROC_3')
-
 
     # PRC
     precision, recall, thresholds = precision_recall_curve(actual, prob)
@@ -44,15 +35,7 @@ def evaluate(prob, actual, model_name, obs_win, pred_win, n_feat, acc):
     pre_rec_thres = pd.DataFrame(zip(thresholds, recall, precision),
                                  columns=['thresholds', 'recall', 'precision']).sort_values(by='recall',
                                                                         ascending=False).reset_index(drop=True)
-    if acc==False: # imbalanced dataset
-        display_prc = PrecisionRecallDisplay.from_predictions(actual, prob, name=model_name, plot_chance_level=True)
-        display_prc.ax_.set_title(
-            'PRC: ' + model_name + ', obs ' + str(obs_win) + ', pred ' + str(pred_win) + ', feat ' + str(n_feat),
-            fontsize=16)  # AP is Weighted Average Precision of thresholds
-        plt.savefig(
-            'plots/' + model_name + '_obs' + str(obs_win) + '_pred' + str(pred_win) + '_feat' + str(n_feat) + '_PRC_3')
-
-
+   
     # threshold such that recall>=0.9 (SEN, FPR)
     sen_fpr_thres_90 = sen_fpr_thres.loc[sen_fpr_thres['sen'] >= 0.9]
     threshold_90 = sen_fpr_thres_90.iloc[-1, 0]
@@ -65,7 +48,7 @@ def evaluate(prob, actual, model_name, obs_win, pred_win, n_feat, acc):
     precision_90 = np.round(precision_score(actual, pred_opt), 5)
     npv_90 = np.round((tn / (tn + fn)), 5)  # NPV  (TN/(TN+FN))
     if acc:
-        acc_90 = np.round(accuracy_score(actual, pred_opt), decimals=5)
+        acc_90 = np.round(accuracy_score(actual, pred_opt), 5)
 
     # threshold that maximizes Youden Index
     youden_indices = [youden_index(actual, prob, threshold) for threshold in sen_fpr_thres['thresholds']]
@@ -79,13 +62,8 @@ def evaluate(prob, actual, model_name, obs_win, pred_win, n_feat, acc):
     precision_yuden = np.round(precision_score(actual, pred_opt), 5)
     npv_yuden = np.round((tn / (tn + fn)), 5)  # NPV  (TN/(TN+FN))
     if acc:
-        acc_yuden = np.round(accuracy_score(actual, pred_opt), decimals=5)
+        acc_yuden = np.round(accuracy_score(actual, pred_opt), 5)
 
-    # disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-    # disp.plot()
-    # plt.savefig('plots/' + model_name + '_obs' + str(obs_win) + '_pred' + str(pred_win) + '_feat' + str(n_feat) + '_CM')
-    # plt.show()
-    # print(classification_report(actual, pred))
     if acc:
         return auc, sen_90, spec_90, precision_90, npv_90, sen_yuden, spec_yuden, precision_yuden, npv_yuden, threshold_90, threshold_yuden, acc_90, acc_yuden
     else:
@@ -96,12 +74,12 @@ def plot_all_metrics_ensemble():
     # Load Data
     y_test_df = pd.DataFrame()
     for idx in range(0, 40):
-        df_test = pd.read_csv(f'data_processed/test_{idx + 1}.csv').iloc[:, :-1]
+        df_test = pd.read_csv(f'PIPELINE2/data_processed/test_{idx + 1}.csv').iloc[:, :-1]
         y_test = df_test.iloc[:, -1]
         y_test_df = pd.concat([y_test_df, y_test], axis=1)
     y_test_df.columns = list(range(1, 41))
 
-    prob_avg_df = pd.read_csv('predictions/GBM-LSTM_obs24_pred12_prob_balanced_3.csv')
+    prob_avg_df = pd.read_csv('PIPELINE2/predictions/GBM-LSTM_balanced_prob.csv')
 
     # Set up Subplots (2x2 grid)
     fig, axs = plt.subplots(2, 2, figsize=(18, 14))
@@ -190,7 +168,7 @@ def plot_all_metrics_ensemble():
 
     net_benefit_matrix = np.array(all_net_benefits)
     avg_net_benefit_across_sets = np.mean(net_benefit_matrix, axis=0)
-    event_rate = np.mean(np.concatenate([y_test_df.iloc[:, idx].dropna().values for idx in range(41)]))
+    event_rate = np.mean(np.concatenate([y_test_df.iloc[:, idx].dropna().values for idx in range(40)]))
 
     # Treat all and none
     treat_all = event_rate - (1 - event_rate) * (thresholds / (1 - thresholds))
@@ -214,5 +192,5 @@ def plot_all_metrics_ensemble():
     ax_dca.tick_params(axis='both', labelsize=14)
 
     plt.tight_layout()
-    plt.savefig('plots/GBM-LSTM_obs24_pred12_ALL_PLOTS.png', dpi=300)
+    plt.savefig('PIPELINE2/plots/GBM-LSTM_balanced_allplots.png', dpi=300)
     plt.show()

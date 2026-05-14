@@ -68,12 +68,12 @@ def plot_all_sepsis():
     # print(grouped.iloc[:7, :])
 
 
-def plot_feat_importances(model_name, obs_win, pred_win, n_feat, model):
+def plot_feat_importances(model_name, n_feat, model):
     model_feats = model.feature_names_in_.tolist()
     X_cols = model_feats
 
-    itemids = pd.read_csv('data_raw/d_items.csv')[['itemid', 'label']]
-    icd10_codes = pd.read_csv('data_raw/icd10cm_codes_2024.csv')
+    itemids = pd.read_csv('PIPELINE2/data_raw/d_items.csv')[['itemid', 'label']]
+    icd10_codes = pd.read_csv('PIPELINE2/data_raw/icd10cm_codes_2024.csv')
 
     importances = model.feature_importances_
     indices = np.argsort(importances)
@@ -81,17 +81,17 @@ def plot_feat_importances(model_name, obs_win, pred_win, n_feat, model):
     print(items)
     labels = []
     for item in items:
-        if ('_' in item) and (item[-1].isdigit()):  # ending in window number
+        if ('_' in item) and (item[-1].isdigit() and ('diff' not in item)):  # ending in window number
             itemid = item.rsplit('_', 1)[0]
-            if itemid.isdigit():  # itemid (chartevent/inputevent/outputevent/procedureevent)
+            if itemid.isdigit():  # itemid (chartevent)
                 label = itemids.loc[itemids['itemid'] == int(itemid)]['label'].values[0]
                 label = label + '_' + item.rsplit('_', 1)[1]
                 labels.append(label)
             else: #ratios
                 labels.append(item)
-        elif ('_' in item) and (item.rsplit('_', 1)[1] in ['mean', 'median', 'min', 'max', 'sd', 'range', 'sum']): #stats for temporal features
+        elif ('_' in item) and (item.rsplit('_', 1)[1] in ['mean', 'min', 'max','range']): #stats for temporal features
             itemid = item.rsplit('_', 1)[0]
-            if itemid.isdigit(): #itemid (chartevent/inputevent/outputevent/procedureevent)
+            if itemid.isdigit(): #itemid (chartevent)
                 label = itemids.loc[itemids['itemid'] == int(itemid)]['label'].values[0]
                 label = label + '_' + item.rsplit('_', 1)[1]
                 labels.append(label)
@@ -104,11 +104,11 @@ def plot_feat_importances(model_name, obs_win, pred_win, n_feat, model):
             itemid = item.rsplit('_', 2)[0]
             if itemid.isdigit():
                 label = itemids.loc[itemids['itemid'] == int(itemid)]['label'].values[0]
-                label = label + '_' + item.rsplit('_', 2)[-2] + '_' + item.rsplit('_', 2)[-1]
+                label = label + '_' + item.rsplit('_', 2)[1] + '_' + item.rsplit('_', 2)[2]
                 labels.append(label)
             else: #gcs_sum
                 labels.append(item)
-        else:  # gender/ethnicity/age/adm_to_pred/hosp_to_icu
+        else:  # gender/age/hosp_to_icu
             labels.append(item)
     #print(labels)
     #print(importances[indices])
@@ -119,7 +119,7 @@ def plot_feat_importances(model_name, obs_win, pred_win, n_feat, model):
     plt.xlabel('Relative Importance', fontsize=10)
     plt.title('Feature Importances', fontsize=10)
     plt.tight_layout()
-    plt.savefig('plots/' + model_name + '_obs' + str(obs_win) + '_pred' + str(pred_win) + '_feat' + str(n_feat) + '_imp_3')
+    plt.savefig('PIPELINE2/plots/' + model_name + '_feat' + str(n_feat) + '_importances.png')
     plt.show()
 
 

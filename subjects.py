@@ -6,28 +6,29 @@ import pandas as pd
 def data_subjects():
 
     data_subj = pd.DataFrame(
-        columns=['obs_win', 'pred_win', 'train', 'test', 'sepsis_train', 'no_sepsis_train', 'sepsis_test', 'no_sepsis_test'])
-    obs_wins = [24]
-    pred_wins = [12]
-    # obs_wins = [4, 8, 12, 18, 24]
-    # pred_wins = [3, 6, 12]
+        columns=['train', 'val', 'test', 'sepsis_train', 'no_sepsis_train', 'sepsis_val', 'no_sepsis_val', 'sepsis_test', 'no_sepsis_test'])
+ 
+    train = pd.read_csv('PIPELINE2/data_processed/train_selected_feat40.csv')
+    val = pd.read_csv('PIPELINE2/data_processed/val_selected_feat40.csv')
+    test = pd.read_csv('PIPELINE2/data_processed/test_selected_feat40.csv')
 
-    for obs_win in obs_wins:
-        for pred_win in pred_wins:
-            print(obs_win, pred_win)
+    n_train = train.shape[0]
+    nosepsis_train = train['label'].value_counts(normalize=True)[0]
+    sepsis_train = train['label'].value_counts(normalize=True)[1]
 
-            # train
-            df = pd.read_csv('data_processed/obs' + str(obs_win) + '_pred' + str(pred_win) + '_train_3.csv')
-            n_train = df.shape[0]
-            nosepsis_train = df['label'].value_counts()[0]
-            sepsis_train = df['label'].value_counts()[1]
+    n_val = val.shape[0]
+    nosepsis_val = val['label'].value_counts(normalize=True)[0]
+    sepsis_val = val['label'].value_counts(normalize=True)[1]
 
-            #test
-            df = pd.read_csv('data_processed/obs' + str(obs_win) + '_pred' + str(pred_win) + '_test_3.csv')
-            n_test = df.shape[0]
-            nosepsis_test = df['label'].value_counts()[0]
-            sepsis_test = df['label'].value_counts()[1]
+    n_test = test.shape[0]
+    nosepsis_test = test['label'].value_counts(normalize=True)[0]
+    sepsis_test = test['label'].value_counts(normalize=True)[1]
+    data_subj.loc[len(data_subj)] = [n_train, n_val, n_test, sepsis_train, nosepsis_train, sepsis_val, nosepsis_val, sepsis_test, nosepsis_test]
+    data_subj.to_csv('PIPELINE2/data_processed/data_subjects_percentages.csv', index=False)
 
-            data_subj.loc[len(data_subj)] = [obs_win, pred_win, n_train, n_test, sepsis_train, nosepsis_train, sepsis_test, nosepsis_test]
-    data_subj.to_csv('data_subjects.csv')
-    print(data_subjects)
+# train_eicu = pd.read_csv('PIPELINE2/data_processed_eicu/train_df.csv')
+# test_eicu = pd.read_csv('PIPELINE2/data_processed_eicu/test_df.csv')
+# print(train_eicu.label.value_counts(normalize=True))
+# print(test_eicu.label.value_counts(normalize=True))
+# print(len(train_eicu))
+# print(len(test_eicu))

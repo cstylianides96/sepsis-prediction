@@ -28,7 +28,7 @@ def outlier_imputation(data, id_attribute, value_attribute, cut_off,left_thresh,
         #print(values.max(),values.min(),values.mean())
         index = values.index
         values = compute_outlier_imputation(values, cut_off,left_thresh,impute)
-        data[value_attribute].iloc[index] = values
+        data.loc[index, value_attribute] = values
     data=data.dropna(subset=[value_attribute])
     #print(data_processed.shape)
     return data
