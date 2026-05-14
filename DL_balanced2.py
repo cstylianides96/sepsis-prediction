@@ -426,12 +426,3 @@ def run_dl(model_name, obs_win, lr, epochs, batch_size, model_try):
  
     fit(model_name=model_name, obs_win=obs_win, lr=lr, epochs=epochs, batch_size=batch_size, model_try=model_try)
     predict(model_name, obs_win, model_try)
-
-
-# run_dl(model_name='1DCNN-LSTM', obs_win=24, lr=0.001, epochs=60, batch_size=32, model_try='9')
-#  1dcnn10 auc 0.80, loss 0.56
-
-# lstm 7 onwards new preprocessing
-# 1dcnn 12 onwards new preprocessing
-# tcn 6 onwards new preprocessing
-# 1dcnn-lstm 6 onwards new preprocessing

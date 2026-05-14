@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 from typing import Concatenate
 import pandas as pd
 from prompt_toolkit.input import Input

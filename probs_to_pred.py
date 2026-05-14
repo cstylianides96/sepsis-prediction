@@ -1,3 +1,5 @@
+# Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
+
 import pandas as pd
 
 def probs_to_pred(model): # edit 'thrs_yuden' to 'thres_90'
