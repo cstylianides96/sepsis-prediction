@@ -374,6 +374,30 @@ def train_test_split():
     train_df.to_csv('/data_processed_eicu/train_df.csv', index=False)
     test_df.to_csv('/data_processed_eicu/test_df.csv', index=False)
 
+def train_test_split2():
+    df = pd.read_csv('/data_processed_eicu/df_imputed_flattened_agg.csv')
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+    stays = df['patientunitstayid'].values
+    stay_labels = df['label'].values
+    train_idx, test_idx = next(sss.split(stays.reshape(-1, 1), stay_labels))
+    train_stays = stays[train_idx]
+    test_stays = stays[test_idx]
+    train_df = df[df['patientunitstayid'].isin(train_stays)].reset_index(drop=True)
+    test_df = df[df['patientunitstayid'].isin(test_stays)].reset_index(drop=True)
+    train_df.to_csv('/data_processed_eicu/train_df.csv', index=False)
+    test_df.to_csv('/data_processed_eicu/test_df.csv', index=False)
+
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.3, random_state=42)
+    stays = train_df['patientunitstayid'].values
+    stay_labels = train_df['label'].values
+    train_idx, val_idx = next(sss.split(stays.reshape(-1, 1), stay_labels))
+    train_stays = stays[train_idx]
+    val_stays = stays[val_idx]
+    train_split_df = train_df[train_df['patientunitstayid'].isin(train_stays)].reset_index(drop=True)
+    val_df = train_df[train_df['patientunitstayid'].isin(val_stays)].reset_index(drop=True)
+    train_split_df.to_csv('/data_processed_eicu/train_split_df.csv', index=False)
+    val_df.to_csv('/data_processed_eicu/val_df.csv', index=False)
+
 
 def normalize():
     train_df = pd.read_csv('/data_processed_eicu/train_df.csv')
@@ -386,6 +410,19 @@ def normalize():
     df_train_norm.to_csv('/data_processed_eicu/train_df_norm.csv', index=False)
     df_test_norm.to_csv('/data_processed_eicu/test_df_norm.csv', index=False)
 
+def normalize2():
+    train_df = pd.read_csv('/data_processed_eicu/train_df.csv')
+    val_df = pd.read_csv('/data_processed_eicu/val_df.csv')
+    test_df = pd.read_csv('/data_processed_eicu/test_df.csv')
+    
+    scaler = MinMaxScaler()
+    df_train_norm = pd.DataFrame(scaler.fit_transform(train_df), columns=train_df.columns)
+    df_val_norm = pd.DataFrame(scaler.transform(val_df), columns=val_df.columns)
+    df_test_norm = pd.DataFrame(scaler.transform(test_df), columns=test_df.columns)
+    print(df_train_norm.describe())
+    df_train_norm.to_csv('/data_processed_eicu/train_df_norm.csv', index=False)
+    df_val_norm.to_csv('/data_processed_eicu/val_df_norm.csv', index=False)
+    df_test_norm.to_csv('/data_processed_eicu/test_df_norm.csv', index=False)
 
 def balance():    
     train_df = pd.read_csv('/data_processed_eicu/train_df.csv')
@@ -468,4 +505,4 @@ def preprocess_eICU():
     create_aggregates()
     train_test_split()
     normalize()
-    balance()
+    balance()  ### remove

@@ -11,6 +11,7 @@ from subjects import data_subjects
 from descriptive_stats import dataset_stats, demo_stats
 from xai_preprocess import itemid_to_name_dataset, categorize
 from balanced_datasets import create_balanced_datasets
+from balanced_datasets_eICU import create_balanced_datasets_eICU
 from probs_to_pred import probs_to_pred
 from ML_balanced import run_ml_balanced, run_ml_average
 from DL_balanced2 import run_dl
@@ -54,5 +55,6 @@ def run_pipeline():
     create_cohort_eICU()
     extract_data_eICU()
     preprocess_eICU()
+    create_balanced_datasets_eICU() ### new
     ensemble_eICU()
 run_pipeline()
