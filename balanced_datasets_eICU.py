@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-# Split TRAIN, VAL, TEST sets into balanced sets of cases and controls (40 splits for each set)
+# Split TRAIN, VAL, TEST sets into balanced sets of cases and controls 
 def df_train_sets_balanced(encoded=False):
     df_train = pd.read_csv('/data_processed_eicu/train_df.csv')
     df_train['index'] = range(0, len(df_train))

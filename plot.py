@@ -145,3 +145,70 @@ def histogram_plots():
 
         plt.tight_layout()
         plt.show()
+
+
+def box_plots():
+    ensemble_metrics = pd.read_csv('/results/ENSEMBLE_results_balanced.csv')
+    ensemble_metrics = ensemble_metrics[['test_auc','test_sen_90','test_spec_90','test_precision_90','test_npv_90','test_sen_yuden','test_spec_yuden','test_precision_yuden','test_npv_yuden']]
+    metrics = ensemble_metrics.columns.tolist()
+    n = len(metrics)
+    n_cols = 2
+    n_rows = math.ceil(n / n_cols)
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(3 * n_cols, 4 * n_rows))
+    axes = axes.flatten()
+    # boxplot style props
+    boxprops = dict(facecolor='#a6cee3', color='black')
+    medianprops = dict(color='red')
+    whiskerprops = dict(color='black')
+    capprops = dict(color='black')
+    flierprops = dict(marker='o', markerfacecolor='gray', markersize=4, alpha=0.6)
+
+    for i, col in enumerate(metrics):
+        data = ensemble_metrics[col].dropna()
+        if i >= len(axes):
+            break
+        if data.empty:
+            axes[i].text(0.5, 0.5, 'No data', ha='center', va='center', transform=axes[i].transAxes, fontsize=8)
+            axes[i].axis('off')
+            continue
+
+        # compute stats
+        q1 = data.quantile(0.25)
+        median = data.median()
+        q3 = data.quantile(0.75)
+        iqr = q3 - q1
+        mean = data.mean()
+        data_min = data.min()
+        data_max = data.max()
+        data_range = data_max - data_min
+        std = data.std()
+
+        # draw boxplot with styling
+        axes[i].boxplot(data, vert=True, patch_artist=True,
+                        boxprops=boxprops, medianprops=medianprops,
+                        whiskerprops=whiskerprops, capprops=capprops,
+                        flierprops=flierprops)
+
+        # add stats textbox in axes coordinates
+        stats_text = (
+            f"median: {median:.2f}\n"
+            f"IQR: {iqr:.2f}\n"
+            f"mean: {mean:.2f}\n"
+            f"range: {data_range:.2f}\n"
+            f"std: {std:.2f}"
+        )
+        axes[i].text(0.03, 0.97, stats_text, transform=axes[i].transAxes,
+                     fontsize=9, verticalalignment='top',
+                     bbox=dict(boxstyle='round', facecolor='white', alpha=0.6))
+
+        axes[i].set_title(col, fontsize=12)
+        axes[i].tick_params(axis='both', which='major', labelsize=10)
+
+    # Turn off any unused subplots
+    for j in range(n, len(axes)):
+        axes[j].axis('off')
+
+    plt.tight_layout()
+    plt.savefig('/plots/ensemble_metrics_boxplots.png', dpi=200)
+    plt.show()

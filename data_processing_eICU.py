@@ -374,19 +374,6 @@ def train_test_split():
     train_df.to_csv('/data_processed_eicu/train_df.csv', index=False)
     test_df.to_csv('/data_processed_eicu/test_df.csv', index=False)
 
-def train_test_split2():
-    df = pd.read_csv('/data_processed_eicu/df_imputed_flattened_agg.csv')
-    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
-    stays = df['patientunitstayid'].values
-    stay_labels = df['label'].values
-    train_idx, test_idx = next(sss.split(stays.reshape(-1, 1), stay_labels))
-    train_stays = stays[train_idx]
-    test_stays = stays[test_idx]
-    train_df = df[df['patientunitstayid'].isin(train_stays)].reset_index(drop=True)
-    test_df = df[df['patientunitstayid'].isin(test_stays)].reset_index(drop=True)
-    train_df.to_csv('/data_processed_eicu/train_df.csv', index=False)
-    test_df.to_csv('/data_processed_eicu/test_df.csv', index=False)
-
     sss = StratifiedShuffleSplit(n_splits=1, test_size=0.3, random_state=42)
     stays = train_df['patientunitstayid'].values
     stay_labels = train_df['label'].values
@@ -395,22 +382,10 @@ def train_test_split2():
     val_stays = stays[val_idx]
     train_split_df = train_df[train_df['patientunitstayid'].isin(train_stays)].reset_index(drop=True)
     val_df = train_df[train_df['patientunitstayid'].isin(val_stays)].reset_index(drop=True)
-    train_split_df.to_csv('/data_processed_eicu/train_split_df.csv', index=False)
+    train_split_df.to_csv('/data_processed_eicu/train_df.csv', index=False)
     val_df.to_csv('/data_processed_eicu/val_df.csv', index=False)
 
-
 def normalize():
-    train_df = pd.read_csv('/data_processed_eicu/train_df.csv')
-    test_df = pd.read_csv('/data_processed_eicu/test_df.csv')
-    
-    scaler = MinMaxScaler()
-    df_train_norm = pd.DataFrame(scaler.fit_transform(train_df), columns=train_df.columns)
-    df_test_norm = pd.DataFrame(scaler.transform(test_df), columns=test_df.columns)
-    print(df_train_norm.describe())
-    df_train_norm.to_csv('/data_processed_eicu/train_df_norm.csv', index=False)
-    df_test_norm.to_csv('/data_processed_eicu/test_df_norm.csv', index=False)
-
-def normalize2():
     train_df = pd.read_csv('/data_processed_eicu/train_df.csv')
     val_df = pd.read_csv('/data_processed_eicu/val_df.csv')
     test_df = pd.read_csv('/data_processed_eicu/test_df.csv')
@@ -424,76 +399,6 @@ def normalize2():
     df_val_norm.to_csv('/data_processed_eicu/val_df_norm.csv', index=False)
     df_test_norm.to_csv('/data_processed_eicu/test_df_norm.csv', index=False)
 
-def balance():    
-    train_df = pd.read_csv('/data_processed_eicu/train_df.csv')
-    train_df_norm = pd.read_csv('/data_processed_eicu/train_df_norm.csv')
-    test_df = pd.read_csv('/data_processed_eicu/test_df.csv')
-    test_df_norm = pd.read_csv('/data_processed_eicu/test_df_norm.csv')
-    # model_feats_dl = pd.read_csv('/data_processed/train_X_1_norm.csv').iloc[:, :-2].columns.tolist()
-
-    print("\nOriginal label distribution:")
-    print(train_df['label'].value_counts())
-
-    # balance training set (non normalized)   
-    X_train = train_df.drop(columns=['patientunitstayid', 'label']) 
-    y_train = train_df['label']
-    X_test = test_df.drop(columns=['patientunitstayid', 'label'])
-    y_test = test_df['label']
-    
-    ros = RandomOverSampler(random_state=42)
-    X_train_resampled, y_train_resampled = ros.fit_resample(X_train, y_train)
-    X_test_resampled, y_test_resampled = ros.fit_resample(X_test, y_test)
-
-    balanced_train_df = pd.concat(
-        [
-            pd.DataFrame(X_train_resampled, columns=X_train.columns),
-            pd.Series(y_train_resampled, name='label')
-        ],
-        axis=1
-    ).copy()
-    balanced_test_df = pd.concat(
-        [
-            pd.DataFrame(X_test_resampled, columns=X_test.columns),
-            pd.Series(y_test_resampled, name='label')
-        ],
-        axis=1
-    ).copy()
-
-    print("\nBalanced label distribution:")
-    print(balanced_train_df['label'].value_counts())
-    print(balanced_test_df['label'].value_counts())
-    balanced_train_df.to_csv('/data_processed_eicu/train_df_balanced.csv', index=False)
-    balanced_test_df.to_csv('/data_processed_eicu/test_df_balanced.csv', index=False)
-
-    # balance training set (normalized)
-    X_train_norm = train_df_norm.drop(columns=['patientunitstayid', 'label'])
-    y_train_norm = train_df_norm['label']
-    X_test_norm = test_df_norm.drop(columns=['patientunitstayid', 'label'])
-    y_test_norm = test_df_norm['label'] 
-
-    ros_norm = RandomOverSampler(random_state=42)
-    X_train_resampled_norm, y_train_resampled_norm = ros_norm.fit_resample(X_train_norm, y_train_norm)  
-    X_test_resampled_norm, y_test_resampled_norm = ros_norm.fit_resample(X_test_norm, y_test_norm)
-
-    balanced_train_norm_df = pd.concat(
-        [
-            pd.DataFrame(X_train_resampled_norm, columns=X_train_norm.columns),
-            pd.Series(y_train_resampled_norm, name='label')
-        ],
-        axis=1
-    ).copy()
-    balanced_test_norm_df = pd.concat(
-        [
-            pd.DataFrame(X_test_resampled_norm, columns=X_test_norm.columns), 
-            pd.Series(y_test_resampled_norm, name='label')
-        ],
-        axis=1
-    ).copy()
-
-    balanced_train_norm_df.to_csv('/data_processed_eicu/train_df_norm_balanced.csv', index=False)
-    balanced_test_norm_df.to_csv('/data_processed_eicu/test_df_norm_balanced.csv', index=False)    
-
-
 
 def preprocess_eICU():
     detect_outliers_chart()
@@ -505,4 +410,3 @@ def preprocess_eICU():
     create_aggregates()
     train_test_split()
     normalize()
-    balance()  ### remove

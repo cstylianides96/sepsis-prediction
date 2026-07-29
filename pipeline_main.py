@@ -55,6 +55,6 @@ def run_pipeline():
     create_cohort_eICU()
     extract_data_eICU()
     preprocess_eICU()
-    create_balanced_datasets_eICU() ### new
+    create_balanced_datasets_eICU()
     ensemble_eICU()
 run_pipeline()

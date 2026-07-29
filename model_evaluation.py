@@ -60,7 +60,7 @@ def evaluate(prob, actual, acc):
     sen_yuden = np.round(recall_score(actual, pred_opt), 5)  # tp / (tp + fn)  # Recall/TPR/Sensitivity(TP/(TP+FN))
     spec_yuden = np.round((tn / (tn + fp)), 5)  # Specificity / TNR(TN / (TN + FP))
     precision_yuden = np.round(precision_score(actual, pred_opt), 5)
-    npv_yuden = np.round((tn / (tn + fn)), 5)  # NPV  (TN/(TN+FN))
+    npv_yuden = np.round((tn / (tn + fn)), 5) # NPV  (TN/(TN+FN))
     if acc:
         acc_yuden = np.round(accuracy_score(actual, pred_opt), 5)
 
