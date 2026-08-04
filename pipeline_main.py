@@ -13,10 +13,10 @@ from xai_preprocess import itemid_to_name_dataset, categorize
 from balanced_datasets import create_balanced_datasets
 from balanced_datasets_eICU import create_balanced_datasets_eICU
 from probs_to_pred import probs_to_pred
-from ML_balanced import run_ml_balanced, run_ml_average
-from DL_balanced2 import run_dl
+from ML_balanced import run_ml_balanced, run_ml_average, run_ml_balanced_smote
+from DL_balanced2 import run_dl, run_dl_smote
 from results_DL import overall_results_DL, overall_results_DL_updated
-from ensemble import run_ensemble
+from ensemble import run_ensemble, run_ensemble_smote
 from model_evaluation import plot_all_metrics_ensemble
 from xai_full import run_xai
 from ML_eICU import ensemble_eICU
@@ -38,7 +38,7 @@ def run_pipeline():
     run_ml_average(encoded=False)
     probs_to_pred('GBM') 
 
-    run_dl(model_name='IDCNN', obs_win=24, pred_win=12, lr=0.001, epochs=60, batch_size=32, model_try='10') #params for final model in code
+    run_dl(model_name='LSTM', obs_win=24, pred_win=12, lr=0.001, epochs=60, batch_size=32, model_try='15') 
     overall_results_DL()
     overall_results_DL_updated(['1DCNN', '1DCNN-LSTM', 'LSTM', 'TCN'], [15, 8, 15, 6])
     probs_to_pred('LSTM') 
@@ -57,4 +57,9 @@ def run_pipeline():
     preprocess_eICU()
     create_balanced_datasets_eICU()
     ensemble_eICU()
+
+    run_ml_balanced_smote(encoded=False)
+    run_dl_smote(model_name='LSTM_smote', obs_win=24, lr=0.001, epochs=1, batch_size=32)
+    run_ensemble_smote()
+
 run_pipeline()

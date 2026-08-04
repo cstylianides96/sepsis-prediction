@@ -61,3 +61,35 @@ def run_ensemble():
                             'test_sen_yuden', 'test_spec_yuden', 'test_precision_yuden','test_npv_yuden', 
                             'acc_90', 'acc_yuden']].mean()
     print(results_mean)
+
+
+def run_ensemble_smote():
+    results = pd.DataFrame(columns=['model', 'obs_win', 'pred_win', 'test_auc', 'test_sen_90', 'test_spec_90',
+                                    'test_precision_90', 'test_npv_90', 'test_sen_yuden', 'test_spec_yuden',
+                                    'test_precision_yuden', 'test_npv_yuden', 'thres_90', 'thres_yuden', 'acc_90', 'acc_yuden'])
+
+    # predictions from balanced datasets - smote
+    prob_ml = pd.read_csv('/predictions/ML_prob_balanced_smote.csv')
+    print(prob_ml)
+    prob_dl = pd.read_csv('/predictions/LSTM_smote_balanced_prob.csv')
+    print(prob_dl)
+
+    # average of predictions
+    prob_avg = pd.DataFrame(
+        np.nanmean([prob_ml.values, prob_dl.values], axis=0),
+    )
+    prob_avg.to_csv('/predictions/GBM-LSTM_balanced_prob_smote.csv', index=False)
+    print(prob_avg)
+
+    #y true
+    df_test = pd.read_csv('/data_processed/test_selected_feat40.csv')
+    y_test = df_test.iloc[:, -1]
+    print(y_test)
+
+    test_auc, sen_90, spec_90, precision_90, npv_90, sen_yuden, spec_yuden, precision_yuden, npv_yuden, thres_90, thres_yuden, acc_90, acc_yuden = evaluate(prob_avg, y_test, acc=True)
+    print(test_auc)
+
+    results.loc[len(results)] = ['ENSEMBLE', 24, 12, test_auc, sen_90, spec_90, precision_90, npv_90, sen_yuden, spec_yuden,
+                                     precision_yuden, npv_yuden, thres_90, thres_yuden, acc_90, acc_yuden]
+
+    results.to_csv('/results/ENSEMBLE_results_balanced_smote.csv', index=False)

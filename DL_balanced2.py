@@ -23,6 +23,7 @@ from keras_core.models import load_model
 from keras_core.metrics import AUC
 from keras_core.optimizers import Adam
 import joblib
+from imblearn.over_sampling import SMOTE
 
 
 # Set random seed for reproducibility
@@ -176,6 +177,36 @@ def df_sets_balanced():
         print(df_test)
         df_test.to_csv('/data_processed/test_X_' + str(idx+1) + '_norm.csv', index=False)
 
+def df_sets_balanced_smote():
+
+    X_df_train_temporal = pd.read_csv('/data_processed/train_X_temporal_norm.csv')
+    X_df_val_temporal = pd.read_csv('/data_processed/val_X_temporal_norm.csv')
+    X_df_test_temporal = pd.read_csv('/data_processed/test_X_temporal_norm.csv')
+    X_df_train_static = pd.read_csv('/data_processed/train_X_static_norm.csv')
+    X_df_val_static = pd.read_csv('/data_processed/val_X_static_norm.csv')
+    X_df_test_static = pd.read_csv('/data_processed/test_X_static_norm.csv')
+    y_df_train = pd.read_csv('/data_processed/train_y.csv')
+    y_df_val = pd.read_csv('/data_processed/val_y.csv')
+    y_df_test = pd.read_csv('/data_processed/test_y.csv')
+
+    df_train = pd.concat([X_df_train_temporal, X_df_train_static, y_df_train], axis=1)
+    df_val = pd.concat([X_df_val_temporal, X_df_val_static, y_df_val], axis=1)
+    df_test = pd.concat([X_df_test_temporal, X_df_test_static, y_df_test], axis=1)
+
+    smote = SMOTE(sampling_strategy='auto', random_state=42)
+
+    X_train = df_train.drop(columns=['label'])
+    y_train = df_train['label']
+    X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+    df_train_resampled = pd.concat([X_train_resampled, y_train_resampled], axis=1)
+    df_train_resampled.to_csv('/data_processed/train_all_smote.csv', index=False)
+    print(df_train_resampled['label'].value_counts())
+    print(df_train.shape, df_train_resampled.shape)
+
+    df_val.to_csv('/data_processed/val_all.csv', index=False)
+    print(df_val['label'].value_counts())
+    df_test.to_csv('/data_processed/test_all.csv', index=False)
+    print(df_test['label'].value_counts())
 
 def load_data(idx):
 
@@ -226,6 +257,14 @@ def build_model(model_name, X_train_t, X_train_s, obs_win, lr):
         residual = Dense(32)(temporal_input)
         x_temporal = x_temporal+residual
         # x_temporal = Flatten()(x_temporal)
+        x_temporal = GlobalAveragePooling1D()(x_temporal)
+
+    #SMOTE architecture
+    elif model_name == 'LSTM_smote':
+        x_temporal = LSTM(32, return_sequences=True)(x_temporal)
+        x_temporal = BatchNormalization()(x_temporal)
+        x_temporal = LSTM(8, return_sequences=True)(x_temporal)
+        x_temporal = BatchNormalization()(x_temporal)
         x_temporal = GlobalAveragePooling1D()(x_temporal)
       
 
@@ -418,6 +457,99 @@ def predict(model_name, obs_win, model_try):
 
     results.to_csv('/results/DL_results_balanced_' + model_name + '_' + str(model_try) + '.csv', index=False)
 
+def fit_smote(model_name, obs_win, lr, epochs, batch_size):
+
+    results = pd.DataFrame(columns=['train_loss', 'train_auc', 'val_loss', 'val_auc']) 
+
+    df_train = pd.read_csv('/data_processed/train_all_smote.csv')
+    df_val = pd.read_csv('/data_processed/val_all.csv')
+
+    X_df_train = df_train.iloc[:, :-1]
+    y_df_train = df_train.iloc[:, -1]
+    X_df_val = df_val.iloc[:, :-1]
+    y_df_val = df_val.iloc[:, -1]
+
+    X_train_t = X_df_train.iloc[:, :-10]
+    print('temporal', X_train_t)
+    X_train_s = X_df_train.iloc[:, -10:]
+    X_t_np = preprocess_temporal(X_train_t, obs_win)
+    X_s_np = X_train_s.to_numpy()
+    y_np = y_df_train.to_numpy().ravel()
+
+    X_val_t = X_df_val.iloc[:, :-10]
+    X_val_s = X_df_val.iloc[:, -10:]
+    X_t_val = preprocess_temporal(X_val_t, obs_win)
+    X_s_val = X_val_s.to_numpy()
+    y_val = y_df_val.to_numpy().ravel()
+
+    model = build_model(model_name, X_train_t, X_train_s, obs_win, lr)
+    early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+    checkpoint = ModelCheckpoint('/models/' + str(model_name) + '_' + 'smote.keras', monitor='val_loss', save_best_only=True, mode='min') 
+    #saves model as trained on last dataset with weights where val loss is minimum, every training continues from this, the final model is used for every test set predictions
+
+    history = model.fit(
+        [X_t_np, X_s_np],
+        y_np,
+        validation_data=([X_t_val, X_s_val], y_val),
+        epochs=epochs,
+        batch_size=batch_size,
+        callbacks=[early_stop, checkpoint],  # checkpoint],
+        # class_weight=class_weights,
+        verbose=1)
+
+    # per epoch, batch aggregated 
+    best_epoch = np.argmin(history.history['val_loss'])
+    train_loss = history.history['loss'][best_epoch]
+    train_auc = history.history['auc'][best_epoch] # different to what is printed because verbose returns metrics of last batch, not averaged across batches
+    val_loss = history.history['val_loss'][best_epoch]
+    val_auc = history.history['val_auc'][best_epoch]
+
+    # model evaluated on full training set (recommended for reporting)
+    # train_loss, train_auc = model.evaluate([X_t_np, X_s_np], y_np, verbose=0)
+
+    results.loc[len(results)] = [train_loss, train_auc, val_loss, val_auc]
+
+    # last epoch weights are used for each dataset evaluation (could report best weights since learning is not incremental here)
+    results.to_csv('/results/DL_results_balanced_' + model_name + '_smote.csv', mode='a', header=False,  index=False)
+
+
+def predict_smote(model_name, obs_win):
+
+    results = pd.read_csv('/results/DL_results_balanced_' + model_name + '_smote.csv')
+    probs = pd.DataFrame()
+
+    df_test = pd.read_csv('/data_processed/test_all.csv')
+    X_test = df_test.iloc[:, :-1]
+    y_test = df_test.iloc[:, -1]
+
+    X_test_t = X_test.iloc[:, :-10]
+    X_test_s = X_test.iloc[:, -10:]
+    X_t_np = preprocess_temporal(X_test_t, obs_win)
+    X_s_np = X_test_s.to_numpy()
+    y_np = y_test.to_numpy().ravel()
+
+    # model with weights from lower val loss on final dataset is used for predictions on test set of all datasets (checkpoint callback)
+    model_path = '/models/' + str(model_name) + '_smote.keras'
+    print(f"Loading model from: {model_path}")
+    model = load_model(
+        model_path,
+        compile=True,
+        custom_objects={'AUC': AUC()})  # uses weights from lower loss on final val data
+
+    test_loss, test_auc = model.evaluate(  # uses model with weights from lower loss on final val data
+        [X_t_np, X_s_np], y_np, verbose=0)
+    print("Returned metrics:", test_loss, test_auc) #averaged across batches (verbose returns metrics of last batch)
+    # print("Metric names:", model.metrics_names)
+
+    prob = pd.DataFrame(model.predict([X_t_np, X_s_np]))
+    probs = pd.concat([probs, prob], axis=1)
+   
+    probs.to_csv('/predictions/' + str(model_name) + '_smote_balanced_prob' + '.csv', index=False)
+
+    results.iloc[-1, results.columns.get_loc('test_loss')] = test_loss
+    results.iloc[-1, results.columns.get_loc('test_auc')] = test_auc
+
+    results.iloc[-1, -2:].to_csv('/results/DL_results_balanced_' + model_name + '_smote.csv', mode='a', header=False, index=False)
 
 def run_dl(model_name, obs_win, lr, epochs, batch_size, model_try):
     split_temporal_static(obs_win)
@@ -426,3 +558,8 @@ def run_dl(model_name, obs_win, lr, epochs, batch_size, model_try):
  
     fit(model_name=model_name, obs_win=obs_win, lr=lr, epochs=epochs, batch_size=batch_size, model_try=model_try)
     predict(model_name, obs_win, model_try)
+
+def run_dl_smote(model_name, obs_win, lr, epochs, batch_size):
+    df_sets_balanced_smote()
+    fit_smote(model_name=model_name, obs_win=obs_win, lr=lr, epochs=epochs, batch_size=batch_size)
+    predict_smote(model_name=model_name, obs_win=obs_win)
