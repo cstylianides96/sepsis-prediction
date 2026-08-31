@@ -1,7 +1,7 @@
 # Early Sepsis Prediction Using Interpretable Models
 
 ### Paper
-[Citation]
+[Stylianides, C., et al. "Early Sepsis Prediction Using Interpretable Models," in IEEE Journal of Biomedical and Health Informatics, pp. 1-15, 2026.](https://doi.org/10.1109/JBHI.2026.3725473)
 
 ### Aim
 ML pipeline for sepsis diagnosis 12 hours in advance, by using 24 hours of clinical data (MIMIC-IV) and applying ML, DL, and Ensemble models. The pipeline is supported by a rule-based explainability method and argumentation-based reasoning. The pipeline is externally validated on the eICU dataset.
@@ -87,3 +87,34 @@ on how to use Gorgias Cloud can be found [here](http://gorgiasb.tuc.gr/GorgiasCl
 **run_dl_smote()**: Runs DL models for normalized balanced training set using SMOTE (specific architecture for LSTM_smote given). Requires  model name (LSTM, 1DCNN, TCN, 1DCNN-LSTM), observation window (24), prediction window (12), learning rate, number of epochs, and batch size.
 
 **run_ensemble_smote()**: Saves average predictions of ensemble model fitted on SMOTE-balanced training set and its results.
+
+-------------------------
+
+### Key References
+[Stylianides, C., et al. "AI advances in ICU with an emphasis on sepsis prediction: an overview," in Machine Learning and Knowledge Extraction, vol. 7, no. 1, pp. 6, 2025.](https://www.mdpi.com/3125534)
+
+[European Sepsis Alliance, “European Sepsis Alliance,” European Sepsis Alliance, accessed Jan. 20, 2025. [Online].](https://www.europeansepsisalliance.org/?utm_source=chatgpt.com) 
+
+[World Health Organization, “Sepsis,” Fact Sheets – Newsroom, 3 May 2024, accessed Jan. 20, 2025. [Online].](https://www.who.int/news-room/fact-sheets/detail/sepsis?utm_source=chatgpt.com) 
+
+[M. Singer et al., “The third international consensus definitions for sepsis
+and septic shock (Sepsis-3),” Jama, vol. 315, no. 8, pp. 801–810, 2016.](https://jamanetwork.com/journals/jama/fullarticle/2492881)
+
+[A. E. Johnson et al., “MIMIC-IV, a freely accessible electronic health
+record dataset,” Scientific data, vol. 10, no. 1, p. 1, 2023.](https://www.nature.com/articles/s41597-022-01899-x)
+
+[A. Nicolaou et al., “An Overview of Explainable AI Studies in the
+Prediction of Sepsis Onset and Sepsis Mortality,” Digital Health and
+Informatics Innovations for Sustainable Health Care Systems, pp. 808 –812, 2024.](https://journals.sagepub.com/doi/abs/10.3233/SHTI240534)
+
+[G. R. Lal et al., Te2rules: Explaining tree ensembles using rules,
+https://arxiv.org/pdf/2206.14359.pdf](https://arxiv.org/abs/2206.14359)
+
+[A. C. Kakas et al., “GORGIAS: Applying argumentation,” Argument
+Comput., vol. 10, no. 1, pp. 55–81, 2019](https://journals.sagepub.com/doi/full/10.3233/AAC-181006)
+
+[T. J. Pollard, A. E. Johnson, J. D. Raffa, L. A. Celi, R. G. Mark, and O.
+Badawi, “The eICU Collaborative Research Database, a freely available
+multi-center database for critical care research,” Scientific data, vol. 5, no.
+1, p. 180178, 2018.](https://www.nature.com/articles/sdata2018178)
+
