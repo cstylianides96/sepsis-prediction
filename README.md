@@ -7,8 +7,7 @@
 ML pipeline for sepsis diagnosis 12 hours in advance, by using 24 hours of clinical data (MIMIC-IV) and applying ML, DL, and Ensemble models. The pipeline is supported by a rule-based explainability method and argumentation-based reasoning. The pipeline is externally validated on the eICU dataset.
 
 ### System Specifications
-Parallel data preprocessing was performed on an HPC cluster running Rocky Linux 8.5, featuring multiple compute nodes
-with AMD EPYC 7313 CPUs, up to 512 GB RAM and managed via SLURM. Experiments were conducted on a local workstation
+Data processing and experiments were conducted on a local workstation
 running Ubuntu 22.04.5 LTS with Linux kernel 6.8.0. The system was equipped with an Intel Core i9-12900K CPU (16 cores,
 24 threads, up to 5.2 GHz) and 62 GB of RAM. Analyses were run on Python >= 3.10. Deep learning models were implemented
 using keras-core with the TensorFlow backend and executed on the CPU.
