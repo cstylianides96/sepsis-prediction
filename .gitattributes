@@ -1,3 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 *shared_dataset_mimiciv.csv filter=lfs diff=lfs merge=lfs -text
+*shared_dataset_eicu.csv filter=lfs diff=lfs merge=lfs -text
