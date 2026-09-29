@@ -23,8 +23,14 @@ table. Save it in the 'data_raw' directory as *sepsis3.csv*.
 5. Download raw [eICU v2.0](https://physionet.org/content/eicu-crd/2.0/) data. Save the following tables in the 'data_raw_eicu_v2.0' directory: *diagnosis.csv*. *patient.csv*, *lab.csv*, *nurseCharting.csv*.
 6. Run **pipeline_main.py** for the full pipeline.
 
-MIMIC-IV data as they were used in models after processing are provided in the 'data_processed' directory.
+-------------------------------------------------
+### CSV and TXT files provided
+
+MIMIC-IV datasets as they were used in models after processing are provided in the 'data_processed' directory.
+
 *ICD9_to_ICD10_mapping.txt* is sourced from [Gupta et al.](https://proceedings.mlr.press/v193/gupta22a)
+
+Reusable MIMIC-IV and eICU datasets (*shared_dataset_mimiciv.csv*, *shared_dataset_eicu.csv*) of the selected cohorts after feature engineering (before any feature selection, normalization, or splitting) are provided for research purposes. [mimic-iv cohort citation][eicu cohort citation] 
 
 ------------------------------------------------------------------------------------------------------------------------
 
