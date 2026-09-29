@@ -100,36 +100,6 @@ def run_ml_average(encoded=False):
     #print(results_sd)
 
 
-# ML BALANCED
-# train_auc_mean          0.868304
-# test_auc                0.871052
-# test_sen_90             0.905505
-# test_spec_90            0.580504
-# test_precision_90       0.684593
-# test_npv_90             0.859088
-
-# test_sen_yuden          0.766972
-# test_spec_yuden         0.824886
-# test_precision_yuden    0.817580
-# test_npv_yuden          0.782454
-# acc_90                  0.743004
-# acc_yuden               0.795929
-
-
-# ENSEMBLE 
-# test_auc                0.873292
-# test_sen_90             0.905161
-# test_spec_90            0.593120
-# test_precision_90       0.691125
-# test_npv_90             0.861287
-
-# test_sen_yuden          0.792547
-# test_spec_yuden         0.808716
-# test_precision_yuden    0.808249
-# test_npv_yuden          0.798001
-# acc_90                  0.749140
-# acc_yuden               0.800631
-
 def run_ml_balanced_smote():
     model_name = 'GBM'
     results = pd.DataFrame(columns=['model', 'best_params', 'n_feat', 'train_auc_mean', 'train_auc_sd', 'test_auc', 

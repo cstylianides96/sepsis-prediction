@@ -47,7 +47,7 @@ def icd9_to_icd10(icd_code):
         ICD-10 code (string) or None if no mapping found
     """
     # Load the mapping file
-    mapping_path = './utils/mappings/ICD9_to_ICD10_mapping.txt'
+    mapping_path = 'ICD9_to_ICD10_mapping.txt'
     
     if not hasattr(icd9_to_icd10, 'mapping_dict'):
         # Load mapping only once and cache it
@@ -483,7 +483,7 @@ def flatten_imputed_datasets_24hrs():
 def create_aggregates():
     
     datasets = {
-    # 'train': '/data_processed/train_merged_imputed_flattened.csv',
+    'train': '/data_processed/train_merged_imputed_flattened.csv',
     'val': '/data_processed/val_merged_imputed_flattened.csv',
     'test': '/data_processed/test_merged_imputed_flattened.csv'
     }

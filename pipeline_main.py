@@ -1,5 +1,6 @@
 # Author: Charithea Stylianides (c.stylianides@cyens.org.cy)
 
+from compressions import compress
 from cohort_creation import create_cohort
 from cohort_creation_eICU import create_cohort_eICU
 from data_extraction import extract_data
@@ -23,6 +24,8 @@ from ML_eICU import ensemble_eICU
 
 
 def run_pipeline():
+
+    compress()
     create_cohort()
     extract_data()
     preprocess()

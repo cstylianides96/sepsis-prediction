@@ -19,7 +19,7 @@ def itemid_to_name_dataset():
     X_cols = model_feats
 
     itemids = pd.read_csv('/data_raw/d_items.csv')[['itemid', 'label', 'linksto']]
-    icd10_codes = pd.read_csv('/data_raw/icd10cm_codes_2024.csv')
+    icd10_codes = pd.read_csv('icd10cm_codes_2024.csv')
     importances = model.feature_importances_
     indices = np.argsort(importances)[::-1]  # most important to least important
     items = [X_cols[i] for i in indices]
@@ -162,29 +162,3 @@ def categorize():
 
         df.to_csv(f'/data_processed/{name}_selected_feat40_names_encoded.csv', index=False)
 
-
-            # 'gcs_sum': {
-            #     'bins': [0, 8, 12, 15],
-            #     'labels': ['comatose', 'confused/lethargic', 'alert/minimally confused']
-            # },
-
-        
-            # 'Potassium (serum)': {
-            #     'bins': [0, 3.4, 5.2, float('inf')],
-            #     'labels': ['Low', 'Normal', 'High']
-            # },
-
-
-            # 'WBC': {
-            #     'bins': [0, 3.6, 10.7, float('inf')],
-            #     'labels': ['Low', 'Normal', 'High']
-            # },
-         
-            # 'Total Bilirubin': {
-            #     'bins': [0, 1.1, 1.9, 5.9, 11.9, float('inf')],
-            #     'labels': ['Normal', 'Above Normal', 'High', 'Very High', 'Extremely High']
-            # },
-           
-            # 'INR': {
-            #     'bins': [0, 0.7, 1.2, float('inf')],
-            #     'labels': ['Low', 'Normal', 'High']

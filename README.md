@@ -17,16 +17,20 @@ using keras-core with the TensorFlow backend and executed on the CPU.
 1. Install all required packages from the **requirements.txt** file.
 2. Create the following directories: 'data_raw', 'data_raw_eicu_v2.0', 'data_processed', 'data_processed_eicu', 'models', 'plots', 'results', 
 'predictions', 'xai-output'.
-3. Download raw [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) data and create the ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis)
-table. Save them in the 'data_raw' directory. 
-4. Download raw [eICU v2.0](https://physionet.org/content/eicu-crd/2.0/) data. Save them in the 'data_raw_eicu_v2.0' directory.
-5. Run **pipeline_main.py** for the full pipeline.
+3. Download raw [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) data. Save the following tables in the 'data_raw' directory': *admissions.csv*, *diagnoses_icd.csv*, *d_items.csv*, *icustays.csv*, *patients.csv*, *chartevents.csv*.
+4. Create the ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis)
+table. Save it in the 'data_raw' directory as *sepsis3.csv*. 
+5. Download raw [eICU v2.0](https://physionet.org/content/eicu-crd/2.0/) data. Save the following tables in the 'data_raw_eicu_v2.0' directory: *diagnosis.csv*. *patient.csv*, *lab.csv*, *nurseCharting.csv*.
+6. Run **pipeline_main.py** for the full pipeline.
 
 MIMIC-IV data as they were used in models after processing are provided in the 'data_processed' directory.
+*ICD9_to_ICD10_mapping.txt* is sourced from [Gupta et al.](https://proceedings.mlr.press/v193/gupta22a)
 
 ------------------------------------------------------------------------------------------------------------------------
 
 ### Functions used in pipeline_main.py
+
+**compress()**: Compresses large files into .csv.gz format.
 
 **create_cohort()**: Creates cases and controls cohort using MIMIC-IV v2.2 and the 'sepsis3' table where cases are
 identified according to the Sepsis-3 definition. Generates *sepsis3_processed.csv*.
