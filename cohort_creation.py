@@ -13,7 +13,7 @@ def create_cohort():
     cohort = pd.read_csv('data_raw/icustays.csv')[['subject_id', 'hadm_id', 'stay_id', 'intime', 'outtime']]
 
     # Work on patients with Sepsis-3 obtained form MIMIC_derived
-    sepsis3 = pd.read_csv('data_processed/sepsis3.csv')
+    sepsis3 = pd.read_csv('data_raw/sepsis3.csv')
     sepsis3 = pd.merge(cohort, sepsis3, on=['subject_id', 'stay_id'])
 
     # Between suspected_infection_time and sofa_time, keep the earliest as sepsis_onset (SEPSIS-3 DEFINITION)
