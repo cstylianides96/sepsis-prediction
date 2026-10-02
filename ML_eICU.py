@@ -32,14 +32,6 @@ if os.environ.get('SEPSIS_USE_GPU', '0') != '1':
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 
-# Set random seed for reproducibility
-SEED = 123
-os.environ['PYTHONHASHSEED'] = str(SEED)
-random.seed(SEED)
-np.random.seed(SEED)
-tf.random.set_seed(SEED)
-
-
 def ml_eICU(): 
 
     prob_ml_list = []
@@ -253,6 +245,13 @@ def dl_eICU():
 
 
 def ensemble_eICU():
+
+    # Set random seed for reproducibility
+    SEED = 123
+    os.environ['PYTHONHASHSEED'] = str(SEED)
+    random.seed(SEED)
+    np.random.seed(SEED)
+    tf.random.set_seed(SEED)
 
     results = pd.DataFrame(columns=['model', 'test_auc', 
                                 'test_sen_90', 'test_spec_90', 'test_precision_90','test_npv_90', 

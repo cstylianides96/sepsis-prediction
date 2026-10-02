@@ -26,13 +26,6 @@ import joblib
 from imblearn.over_sampling import SMOTE
 
 
-# Set random seed for reproducibility
-SEED = 123
-os.environ['PYTHONHASHSEED'] = str(SEED)
-random.seed(SEED)
-np.random.seed(SEED)
-tf.random.set_seed(SEED)
-
 
 def split_temporal_static(obs_win):
 
@@ -552,14 +545,27 @@ def predict_smote(model_name, obs_win):
     results.iloc[-1, -2:].to_csv('/results/DL_results_balanced_' + model_name + '_smote.csv', mode='a', header=False, index=False)
 
 def run_dl(model_name, obs_win, lr, epochs, batch_size, model_try):
+
+    # Set random seed for reproducibility
+    SEED = 123
+    os.environ['PYTHONHASHSEED'] = str(SEED)
+    random.seed(SEED)
+    np.random.seed(SEED)
+    tf.random.set_seed(SEED)
     split_temporal_static(obs_win)
     normalize()
     df_sets_balanced()
- 
     fit(model_name=model_name, obs_win=obs_win, lr=lr, epochs=epochs, batch_size=batch_size, model_try=model_try)
     predict(model_name, obs_win, model_try)
 
 def run_dl_smote(model_name, obs_win, lr, epochs, batch_size):
+
+    # Set random seed for reproducibility
+    SEED = 123
+    os.environ['PYTHONHASHSEED'] = str(SEED)
+    random.seed(SEED)
+    np.random.seed(SEED)
+    tf.random.set_seed(SEED)
     df_sets_balanced_smote()
     fit_smote(model_name=model_name, obs_win=obs_win, lr=lr, epochs=epochs, batch_size=batch_size)
     predict_smote(model_name=model_name, obs_win=obs_win)

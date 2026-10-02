@@ -76,8 +76,6 @@ def overall_results_DL_updated(model_list, ver_list):
     results_new['ver'] = ver_list
     results_new.to_csv('/results/DL_results_balanced_updated.csv', index=False)
 
-# overall_results_DL_updated(['1DCNN', '1DCNN-LSTM', 'LSTM', 'TCN'], [15, 8, 15, 6])
-
 # model = load_model(
 #     '/models/TCN_6.keras',
 #     compile=True,

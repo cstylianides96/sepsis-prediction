@@ -13,27 +13,29 @@ from sklearn.impute import IterativeImputer
 from sklearn.feature_selection import mutual_info_classif
 
 
-cohort = pd.read_csv('/data_processed/sepsis3_processed.csv')
-print(cohort.label.value_counts()) # 0: 80%, 1: 20%
+def required():
 
-cohort_cases = cohort[(cohort['label']==1) & (cohort['los']>=36) & (cohort['hours_after_adm']>=36)]
-cohort_controls = cohort[(cohort['label']==0) & (cohort['los']>=24)]
-cohort = pd.concat([cohort_cases, cohort_controls], axis=0).reset_index(drop=True)
-print(cohort.label.value_counts()) 
+    cohort = pd.read_csv('/data_processed/sepsis3_processed.csv')
+    print(cohort.label.value_counts()) # 0: 80%, 1: 20%
 
-subjectids = cohort['subject_id'].tolist()
-hospids = cohort['hadm_id'].tolist()
-stayids = cohort['stay_id'].tolist()
-labels = cohort['label'].tolist()
-cohort['sepsis_onset'] = pd.to_datetime(cohort['sepsis_onset'])
-sepsistimes = cohort['sepsis_onset'].tolist()
-cohort['intime'] = pd.to_datetime(cohort['intime'])
-admtimes = cohort['intime'].tolist()
-cohort['outtime'] = pd.to_datetime(cohort['outtime'])
-distimes = cohort['outtime'].tolist()
-itemids = pd.read_csv('/data_raw/d_items.csv')
+    cohort_cases = cohort[(cohort['label']==1) & (cohort['los']>=36) & (cohort['hours_after_adm']>=36)]
+    cohort_controls = cohort[(cohort['label']==0) & (cohort['los']>=24)]
+    cohort = pd.concat([cohort_cases, cohort_controls], axis=0).reset_index(drop=True)
+    print(cohort.label.value_counts()) 
 
+    # subjectids = cohort['subject_id'].tolist()
+    # hospids = cohort['hadm_id'].tolist()
+    # stayids = cohort['stay_id'].tolist()
+    # labels = cohort['label'].tolist()
+    cohort['sepsis_onset'] = pd.to_datetime(cohort['sepsis_onset'])
+    # sepsistimes = cohort['sepsis_onset'].tolist()
+    cohort['intime'] = pd.to_datetime(cohort['intime'])
+    # admtimes = cohort['intime'].tolist()
+    cohort['outtime'] = pd.to_datetime(cohort['outtime'])
+    # distimes = cohort['outtime'].tolist()
+    # itemids = pd.read_csv('/data_raw/d_items.csv')
 
+    return cohort
 
 
 def icd9_to_icd10(icd_code):
@@ -75,7 +77,7 @@ def detect_outliers_chart(): # for chart events
     chart.to_csv("data_processed/sepsis_chartevents.csv", index=False)
 
 
-def make_equal_intervals(): # for chart events
+def make_equal_intervals(cohort): # for chart events
  
     chart = pd.read_csv("data_processed/sepsis_chartevents.csv")
     chart['charttime'] = pd.to_datetime(chart['charttime'])
@@ -121,10 +123,10 @@ def make_equal_intervals(): # for chart events
     return final_chart, max_sepsis_onset
 
 
-def create_temporal_chart(): # for chart events
+def create_temporal_chart(cohort): # for chart events
 
     # Resample chart events into equal intervals
-    chart, max_sepsis_onset = make_equal_intervals()
+    chart, max_sepsis_onset = make_equal_intervals(cohort)
 
     # Keep only stays that actually have selected chart events
     chart_stayids = chart['stay_id'].unique()
@@ -174,7 +176,7 @@ def create_temporal_chart(): # for chart events
 # print(len(resampled), 'rows in resampled chart events') # 16739808
 
 
-def create_static_diagnoses():
+def create_static_diagnoses(cohort):
 
     cohort_filtered = cohort[cohort['stay_id'].isin(pd.read_csv('data_processed/chartevents_resampled.csv')['stay_id'].unique())]
     cohort_filtered = cohort_filtered[['subject_id', 'hadm_id', 'stay_id']]
@@ -200,7 +202,7 @@ def create_static_diagnoses():
     diag = diag.fillna(0).astype(int)
     diag.to_csv('data_processed/diagnoses_static.csv', index=False)
 
-def create_static_demographics():
+def create_static_demographics(cohort):
 
     cohort_filtered = cohort[cohort['stay_id'].isin(pd.read_csv('data_processed/chartevents_resampled.csv')['stay_id'].unique())]
     cohort_filtered = cohort_filtered[['subject_id', 'hadm_id', 'stay_id']]
@@ -219,7 +221,7 @@ def create_static_demographics():
     demo.to_csv('data_processed/demographics_static.csv', index=False)
 
 
-def handle_temporal():  #do not flatten, just select 24 hour windows, keep dyn format
+def handle_temporal(cohort):  #do not flatten, just select 24 hour windows, keep dyn format
     
     cohort_filtered = cohort[cohort['stay_id'].isin(pd.read_csv('data_processed/chartevents_resampled.csv')['stay_id'].unique())]
     cohort_filtered = cohort_filtered[['subject_id', 'hadm_id', 'stay_id', 'hours_after_adm', 'label']]
@@ -317,7 +319,7 @@ def encode_MNAR():
     chart.to_csv('data_processed/chartevents_resampled_24hrs.csv', index=False)
 
 
-def create_train_val_test_split(): # just fr temporal - chartevents - then merge static in each split
+def create_train_val_test_split(): # just for temporal - chartevents - then merge static in each split
 
     chart = pd.read_csv('data_processed/chartevents_resampled_24hrs.csv')
 
@@ -637,15 +639,16 @@ def check_missing_values():
 
 
 def preprocess():
+    cohort = required()
     detect_outliers_chart(),
     print('OUTLIERS DETECTED')
-    create_temporal_chart(),  
+    create_temporal_chart(cohort),  
     print('TEMPORAL CHART CREATED')
-    create_static_diagnoses(),
+    create_static_diagnoses(cohort),
     print('STATIC DIAGNOSES CREATED')
-    create_static_demographics()
+    create_static_demographics(cohort)
     print('STATIC DEMOGRAPHICS CREATED')
-    handle_temporal(),
+    handle_temporal(cohort),
     print('TEMPORAL DATA HANDLED'),
     generate_gcs_sum(),
     print('GCS SUM GENERATED'),
