@@ -4,20 +4,6 @@ import pandas as pd
 
 #chart, diagnoses, demo
 
-cohort = pd.read_csv('data_processed/sepsis3_processed.csv')  #PATHS!
-subjectids = cohort['subject_id'].tolist()
-hospids = cohort['hadm_id'].tolist()
-stayids = cohort['stay_id'].tolist()
-labels = cohort['label'].tolist()
-cohort['sepsis_onset'] = pd.to_datetime(cohort['sepsis_onset'])
-sepsistimes = cohort['sepsis_onset'].tolist()
-cohort['intime'] = pd.to_datetime(cohort['intime'])
-admtimes = cohort['intime'].tolist()
-cohort['outtime'] = pd.to_datetime(cohort['outtime'])
-distimes = cohort['outtime'].tolist()
-itemids = pd.read_csv('data_raw/d_items.csv')
-
-
 def extract_chartevents():
     # Chartevents of sepsis patients
     chartevents = pd.read_csv('data_raw/chartevents.csv.gz', compression='gzip', usecols=['stay_id', 'charttime', 'itemid', 'valuenum'])
@@ -206,6 +192,21 @@ def extract_demographics():
 
 
 def extract_data():
+
+    cohort = pd.read_csv('data_processed/sepsis3_processed.csv') 
+    subjectids = cohort['subject_id'].tolist()
+    hospids = cohort['hadm_id'].tolist()
+    stayids = cohort['stay_id'].tolist()
+    labels = cohort['label'].tolist()
+    cohort['sepsis_onset'] = pd.to_datetime(cohort['sepsis_onset'])
+    sepsistimes = cohort['sepsis_onset'].tolist()
+    cohort['intime'] = pd.to_datetime(cohort['intime'])
+    admtimes = cohort['intime'].tolist()
+    cohort['outtime'] = pd.to_datetime(cohort['outtime'])
+    distimes = cohort['outtime'].tolist()
+    itemids = pd.read_csv('data_raw/d_items.csv')
+
     extract_chartevents()
     extract_diagnoses()
     extract_demographics()
+    
