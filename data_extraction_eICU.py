@@ -9,20 +9,6 @@ import math
 import random
 
 
-cohort = pd.read_csv("/data_processed_eicu/sepsis3_eicu.csv")
-print(cohort.label.value_counts(normalize=True))
-cases_ids = cohort[cohort['label'] == 1]['patientunitstayid'].tolist()
-controls_ids = cohort[cohort['label'] == 0]['patientunitstayid'].tolist()
-patients = pd.read_csv("/data_raw_eicu_v2.0/patient.csv.gz", compression='gzip')
-patientunitstayid = patients[patients['patientunitstayid'].isin(cohort['patientunitstayid'])]['patientunitstayid'].tolist()
-print(len(patientunitstayid))
-discharge_df = (
-    patients[patients['patientunitstayid'].isin(cohort['patientunitstayid'])]
-    [['patientunitstayid', 'unitdischargeoffset']]
-    .drop_duplicates('patientunitstayid'))
-print(len(discharge_df))
-
-
 def extract_lab():
     lab = pd.read_csv("/data_raw_eicu_v2.0/lab.csv.gz", compression='gzip')
     # Ensure values after icu adm, before discharge (vectorized)
@@ -79,6 +65,20 @@ def extract_hosp_time():
 
 
 def extract_data_eICU():
+
+    cohort = pd.read_csv("/data_processed_eicu/sepsis3_eicu.csv")
+    print(cohort.label.value_counts(normalize=True))
+    cases_ids = cohort[cohort['label'] == 1]['patientunitstayid'].tolist()
+    controls_ids = cohort[cohort['label'] == 0]['patientunitstayid'].tolist()
+    patients = pd.read_csv("/data_raw_eicu_v2.0/patient.csv.gz", compression='gzip')
+    patientunitstayid = patients[patients['patientunitstayid'].isin(cohort['patientunitstayid'])]['patientunitstayid'].tolist()
+    print(len(patientunitstayid))
+    discharge_df = (
+    patients[patients['patientunitstayid'].isin(cohort['patientunitstayid'])]
+    [['patientunitstayid', 'unitdischargeoffset']]
+    .drop_duplicates('patientunitstayid'))
+    print(len(discharge_df))
+
     extract_lab()
     extract_nurseCharting()
     extract_hosp_time()
