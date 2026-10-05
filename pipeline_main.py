@@ -43,7 +43,6 @@ def run_pipeline():
 
     run_dl(model_name='LSTM', obs_win=24, pred_win=12, lr=0.001, epochs=60, batch_size=32, model_try='15') 
     overall_results_DL()
-    overall_results_DL_updated(['1DCNN', '1DCNN-LSTM', 'LSTM', 'TCN'], [15, 8, 15, 6])
     probs_to_pred('LSTM') 
 
     run_ensemble()
