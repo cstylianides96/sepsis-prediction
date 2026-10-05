@@ -110,7 +110,8 @@ def plot_feat_importances(model_name, n_feat, model):
                 labels.append(item)
         else:  # gender/age/hosp_to_icu
             labels.append(item)
-    #print(labels)
+    print(labels)
+    pd.Series(labels).to_csv(model_name + '_feat' + str(n_feat) + '_features.csv', index=False)
     #print(importances[indices])
     plt.figure()
     plt.barh( labels, importances[indices], color='b', align='center')
