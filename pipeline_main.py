@@ -25,41 +25,50 @@ from ML_eICU import ensemble_eICU
 
 def run_pipeline():
 
+    # Data extraction, patient-level preprocessing, feature engineering and feature selection
     compress()
     create_cohort()
     extract_data()
     preprocess()
     run_gbm(n_feat_imp=40)
     gbm_feat_selection()
-    
+
+    # Statistics
     data_subjects()
     dataset_stats()
     demo_stats()
 
+    # Class balancing and ML 
     create_balanced_datasets(encoded=False) 
     run_ml_balanced(encoded=False) 
     run_ml_average(encoded=False)
     probs_to_pred('GBM') 
 
+    # Class balancing, normalization and DL
     run_dl(model_name='LSTM', obs_win=24, pred_win=12, lr=0.001, epochs=60, batch_size=32, model_try='15') 
     overall_results_DL()
+    overall_results_DL_updated(['LSTM'], [15])
     probs_to_pred('LSTM') 
 
+    # Ensemble modelling and final evaluation plots
     run_ensemble()
     probs_to_pred('ENSEMBLE') 
     plot_all_metrics_ensemble()
-    
+
+    # Preprocessing for XAI, rule extraction and rule selection
     itemid_to_name_dataset()
     categorize()
     create_balanced_datasets(encoded=True)
     run_xai()
 
+    # eICU preprocessing, class balancing, ensemble fit and evaluation on the eICU dataset
     create_cohort_eICU()
     extract_data_eICU()
     preprocess_eICU()
     create_balanced_datasets_eICU()
     ensemble_eICU()
 
+    # Comparison against SMOTE datasets: ensemble training and evaluation
     run_ml_balanced_smote(encoded=False)
     run_dl_smote(model_name='LSTM_smote', obs_win=24, lr=0.001, epochs=1, batch_size=32)
     run_ensemble_smote()

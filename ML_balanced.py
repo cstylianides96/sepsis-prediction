@@ -6,6 +6,7 @@ from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from model_evaluation import evaluate
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
+import joblib
 
 
 def run_ml_balanced(encoded=False):
@@ -161,3 +162,47 @@ def run_ml_balanced_smote():
     # save probs for each model
     prob = pd.DataFrame(prob)
     prob.to_csv('/predictions/ML_prob_balanced_smote.csv', index=False)
+
+
+def features_list():
+    model = joblib.load('models/GBM_balanced_smote.pkl')
+    items = model.feature_names_in_.tolist()
+    itemids = pd.read_csv('data_raw/d_items.csv')[['itemid', 'label', 'linksto']]
+    icd10_codes = pd.read_csv('icd10cm_codes_2024.csv')
+    print(items)
+
+    # get feature labels
+    labels = []
+    for item in items:
+        if ('_' in item) and (item[-1].isdigit() and ('diff' not in item)):  # ending in window number
+            itemid = item.rsplit('_', 1)[0]
+            if itemid.isdigit():  # itemid (chartevent)
+                label = itemids.loc[itemids['itemid'] == int(itemid)]['label'].values[0]
+                label = label + '_' + item.rsplit('_', 1)[1]
+                labels.append(label)
+            else: #ratios
+                labels.append(item)
+        elif ('_' in item) and (item.rsplit('_', 1)[1] in ['mean', 'min', 'max','range']): #stats for temporal features
+            itemid = item.rsplit('_', 1)[0]
+            if itemid.isdigit(): #itemid (chartevent)
+                label = itemids.loc[itemids['itemid'] == int(itemid)]['label'].values[0]
+                label = label + '_' + item.rsplit('_', 1)[1]
+                labels.append(label)
+            else: #ratios
+                labels.append(item)
+        elif item in icd10_codes['icd10_code'].tolist():  # diagnosis
+            label = icd10_codes.loc[icd10_codes['icd10_code'] == item]['label'].values[0]
+            labels.append(label)
+        elif 'diff' in item:
+            itemid = item.rsplit('_', 2)[0]
+            if itemid.isdigit():
+                label = itemids.loc[itemids['itemid'] == int(itemid)]['label'].values[0]
+                label = label + '_' + item.rsplit('_', 2)[1] + '_' + item.rsplit('_', 2)[2]
+                labels.append(label)
+            else: #gcs_sum
+                labels.append(item)
+        else:  # gender/age/hosp_to_icu
+            labels.append(item)
+    labels = pd.DataFrame(labels).reset_index(drop=True)
+    labels.to_csv('features_GBM_balanced_smote.csv', index=False)
+

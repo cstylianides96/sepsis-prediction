@@ -91,11 +91,11 @@ on how to use Gorgias Cloud can be found [here](http://gorgiasb.tuc.gr/GorgiasCl
 
 **ensemble_eICU()**: Runs the GBM and LSTM models developped on MIMIC-IV, averages predictions and computes metrics for the ensemble. Saves results.
 
-**run_ml_balanced_smote()**: Runs a GBM model with 5-fold CV, using SMOTE to balance each training set of each fold. Saves results and predictions for the test set.
+**run_ml_balanced_smote()**: Runs a GBM model with 5-fold CV, using SMOTE to balance each training set of each fold. Saves results, predictions and model.
 
-**run_dl_smote()**: Runs DL models for normalized balanced training set using SMOTE (specific architecture for LSTM_smote given). Requires  model name (LSTM, 1DCNN, TCN, 1DCNN-LSTM), observation window (24), prediction window (12), learning rate, number of epochs, and batch size.
+**run_dl_smote()**: Runs DL models for normalized SMOTE-balanced training set (optimized architecture for LSTM_smote is given). Saves results, predictions and model.
 
-**run_ensemble_smote()**: Saves average predictions of ensemble model fitted on SMOTE-balanced training set and its results.
+**run_ensemble_smote()**: Saves average predictions of the GBM and H-LSTM models fitted on SMOTE-balanced training set and the results of the ensemble evaluated on the imbalanced test set.
 
 -------------------------
 
