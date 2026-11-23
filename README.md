@@ -127,3 +127,9 @@ Badawi, “The eICU Collaborative Research Database, a freely available
 multi-center database for critical care research,” Scientific data, vol. 5, no.
 1, p. 180178, 2018.](https://www.nature.com/articles/sdata2018178)
 
+-------------------------
+
+### License 
+
+The sepsis prediction pipeline developed by CYENS in this repository is released under the MIT License.
+Any cited code used in the pipeline also uses the MIT License.
