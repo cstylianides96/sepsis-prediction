@@ -4,7 +4,7 @@
 [Stylianides, C., et al. "Early Sepsis Prediction Using Interpretable Models," in IEEE Journal of Biomedical and Health Informatics, pp. 1-15, 2026.](https://doi.org/10.1109/JBHI.2026.3725473)
 
 ### Aim
-ML pipeline for sepsis diagnosis 12 hours in advance, by using 24 hours of clinical data (MIMIC-IV) and applying ML, DL, and Ensemble models. The pipeline is supported by a rule-based explainability method and argumentation-based reasoning. The pipeline is externally validated on the eICU dataset.
+ML pipeline for sepsis diagnosis 12 hours in advance, by using 24 hours of clinical data (MIMIC-IV) and applying ML, DL, and Ensemble models. The pipeline is novelly supported by a rule-based explainability method and argumentation-based reasoning. The pipeline is also novelly assessed on the eICU dataset.
 
 ### System Specifications
 Data processing and experiments were conducted on a local workstation
