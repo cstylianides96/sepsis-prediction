@@ -15,7 +15,7 @@ using keras-core with the TensorFlow backend and executed on the CPU.
 ------------------------------------------------------------------------------------------------------------------------
 ### Steps to use this repository
 1. Install all required packages from the **requirements.txt** file.
-2. Create the following directories: 'data_raw', 'data_raw_eicu_v2.0', 'data_processed_eicu', 'plots', 'results', 
+2. Create the following directories: 'data_raw', 'data_raw_eicu_v2.0', 'data_processed', 'data_processed_eicu', 'plots', 'results', 
 'predictions', 'xai-output'.
 3. Download raw [MIMIC-IV v2.2](https://physionet.org/content/mimiciv/2.2/) data. Save the following tables in the 'data_raw' directory': *admissions.csv*, *diagnoses_icd.csv*, *d_items.csv*, *icustays.csv*, *patients.csv*, *chartevents.csv*.
 4. Create the ['sepsis3'](https://github.com/MIT-LCP/mimic-code/tree/main/mimic-iv/concepts/sepsis)
