@@ -24,13 +24,10 @@ table. Instructions on creating the 'sepsis3' table can be found [here](https://
 6. Run **pipeline_main.py** for the full pipeline.
 
 -------------------------------------------------
-### CSV and TXT files provided
-
-MIMIC-IV datasets as they were used in models after processing are provided in the 'data_processed' directory.
 
 *ICD9_to_ICD10_mapping.txt* is sourced from [Gupta et al.](https://proceedings.mlr.press/v193/gupta22a)
 
-Reusable MIMIC-IV and eICU datasets (*shared_dataset_mimiciv.csv*, *shared_dataset_eicu.csv*) of the selected cohorts after feature engineering (before any feature selection, normalization, or splitting) are provided for research purposes. [mimic-iv cohort citation][eicu cohort citation] 
+The LSTM model developed after incremental learning on the 40 balanced datasets is provided in the 'models' directory. As the GBM model was tuned on each of the 40 balanced datasets (resulting on 40 different GBM models), we provide the GBM model balanced using SMOTE (single model) during the ablation study in the same directory. We note that the aggregated parameters of the 40 fitted GBM models and the architecture of the provided LSTM model were used to train a GBM-LSTM (ensemble) model on the eICU dataset.
 
 ------------------------------------------------------------------------------------------------------------------------
 
